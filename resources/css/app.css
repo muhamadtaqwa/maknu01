@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #eef8fd;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+@font-face {
+    font-family: "LPMQ";
+    src: url("/fonts/LPMQ IsepMisbah.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-mushaf {
+    font-family: "LPMQ", "Amiri", "Scheherazade", serif;
+    line-height: 2;
+}
