@@ -8,6 +8,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Kosongkan dulu, nanti diisi manual
+        $this->call([
+            RolePermissionSeeder::class,
+            UserSeeder::class,
+        ]);
     }
 }
