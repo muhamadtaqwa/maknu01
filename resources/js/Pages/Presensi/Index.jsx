@@ -52,16 +52,24 @@ export default function Index() {
         0,
     );
 
+    const formatTgl = (tgl) =>
+        new Date(tgl + "T12:00:00").toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        });
+
     return (
         <AppLayout>
             <div>
-                <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-lg font-bold text-slate-800">
-                        Presensi Ustadz
-                    </h2>
+                <h2 className="text-lg font-bold text-slate-800 mb-4">
+                    Presensi Guru
+                </h2>
+
+                <div className="mb-3">
                     <input
                         type="date"
-                        ref={dateRef}
                         value={tanggal}
                         onChange={(e) => {
                             setTanggal(e.target.value);
@@ -71,16 +79,12 @@ export default function Index() {
                                 { preserveState: true },
                             );
                         }}
-                        className="border border-slate-200 rounded-2xl px-4 py-2.5 text-sm focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 outline-none"
+                        className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
                     />
                 </div>
 
-                <p className="text-sm text-slate-500 mb-4">
-                    {hari},{" "}
-                    {new Date(tanggal + "T12:00:00").toLocaleDateString(
-                        "id-ID",
-                        { day: "numeric", month: "long", year: "numeric" },
-                    )}
+                <p className="text-sm text-slate-500 mb-3">
+                    {formatTgl(tanggal)}
                 </p>
 
                 <div className="space-y-3 mb-6">
@@ -92,12 +96,22 @@ export default function Index() {
                     {jadwal.map((item) => (
                         <div
                             key={item.niu}
-                            className="rounded-[30px] border border-sky-100 bg-white p-4 shadow-2xl"
+                            className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"
                         >
                             <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-semibold text-sm">
-                                    {item.nama}
-                                </h3>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-[#009788] rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0">
+                                        {item.nama?.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-sm">
+                                            {item.nama}
+                                        </p>
+                                        <p className="text-xs text-slate-400">
+                                            {item.niu}
+                                        </p>
+                                    </div>
+                                </div>
                                 {isAdmin &&
                                     (item.sudah_absen ? (
                                         <div className="flex items-center gap-2">
@@ -129,7 +143,7 @@ export default function Index() {
                                                         item.honor_default,
                                                     )
                                                 }
-                                                className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-3 py-1 rounded-lg text-xs font-semibold shadow-lg"
+                                                className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-3 py-1 rounded-lg text-xs font-semibold shadow-lg"
                                             >
                                                 Hadir
                                             </button>
@@ -159,11 +173,11 @@ export default function Index() {
                             </div>
                             <div className="text-[11px] text-slate-500 space-y-0.5">
                                 {item.kitab && (
-                                    <Row label="Kitab" value={item.kitab} />
+                                    <Row label="Mapel" value={item.kitab} />
                                 )}
                                 {isAdmin && (
                                     <Row
-                                        label="Bisyaroh"
+                                        label="Honor"
                                         value={`Rp ${item.honor_default?.toLocaleString()}`}
                                     />
                                 )}
@@ -186,7 +200,7 @@ export default function Index() {
                             {rekap.map((r) => (
                                 <div
                                     key={r.niu}
-                                    className="rounded-2xl border border-sky-100 bg-white p-4 text-sm"
+                                    className="rounded-2xl border border-teal-100 bg-white p-4 text-sm"
                                 >
                                     <h4 className="font-semibold text-slate-700 mb-2">
                                         {r.ustad?.nama_lengkap || r.niu}
@@ -213,7 +227,7 @@ export default function Index() {
                                                 <span className="text-slate-500">
                                                     Honor
                                                 </span>
-                                                <span className="font-bold text-[#3D7ABA] font-mono">
+                                                <span className="font-bold text-[#009788] font-mono">
                                                     Rp{" "}
                                                     {parseInt(
                                                         r.total_honor || 0,
@@ -225,11 +239,11 @@ export default function Index() {
                                 </div>
                             ))}
                             {isAdmin && (
-                                <div className="rounded-2xl bg-gradient-to-r from-[#3D7ABA]/10 to-[#20B5E8]/10 p-4 flex items-center justify-between text-sm font-bold">
-                                    <span className="text-[#3D7ABA]">
+                                <div className="rounded-2xl bg-[#009788]/10 p-4 flex items-center justify-between text-sm font-bold">
+                                    <span className="text-[#009788]">
                                         Total Honor
                                     </span>
-                                    <span className="text-[#3D7ABA] font-mono">
+                                    <span className="text-[#009788] font-mono">
                                         Rp {totalHonor.toLocaleString()}
                                     </span>
                                 </div>

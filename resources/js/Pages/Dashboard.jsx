@@ -20,8 +20,8 @@ export default function Dashboard() {
 
     const nama =
         user.role === "admin"
-            ? "Admin Pondok"
-            : user.santri?.nama_lengkap || user.ustadz?.nama_lengkap || "User";
+            ? "Admin Sekolah"
+            : user.siswa?.nama_lengkap || user.guru?.nama_lengkap || "User";
 
     useEffect(() => {
         const timer = setInterval(() => setTime(new Date()), 1000);
@@ -44,12 +44,12 @@ export default function Dashboard() {
         <AppLayout>
             <div className="space-y-4">
                 {/* Header */}
-                <div className="rounded-2xl bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] p-4 text-white shadow-lg">
+                <div className="rounded-2xl bg-gradient-to-r from-[#009788] to-[#00b5a5] p-4 text-white shadow-lg">
                     <h1 className="text-lg font-bold">
                         Assalamu'alaikum, {nama}
                     </h1>
                     <p className="text-xs text-white/70 mt-0.5">
-                        Selamat datang di Al-Amanah Mobile
+                        Selamat datang di MAK NU 01 Kota Semarang
                     </p>
                     <p className="text-xs text-white/50 mt-0.5 capitalize">
                         {user.role}
@@ -81,39 +81,39 @@ export default function Dashboard() {
                 {user.role === "admin" && (
                     <>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Total Santri
+                                    Total Siswa
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#3D7ABA]">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.totalSantri || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Total Ustadz
+                                    Total Guru
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#20B5E8]">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.totalUstadz || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Santri Putra
+                                    Siswa Putra
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-blue-500">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.santriPutra || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Santri Putri
+                                    Siswa Putri
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-pink-500">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.santriPutri || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Belum Bayar
                                 </p>
@@ -121,7 +121,7 @@ export default function Dashboard() {
                                     {stats?.totalBelumBayar || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Sudah Bayar
                                 </p>
@@ -129,7 +129,7 @@ export default function Dashboard() {
                                     {stats?.totalSudahBayar || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     User Aktif
                                 </p>
@@ -137,7 +137,7 @@ export default function Dashboard() {
                                     {stats?.userAktif || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Total User
                                 </p>
@@ -145,7 +145,7 @@ export default function Dashboard() {
                                     {stats?.totalUser || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Kunjungan Hari Ini
                                 </p>
@@ -153,7 +153,7 @@ export default function Dashboard() {
                                     {stats?.kunjunganHariIni || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Total Kunjungan
                                 </p>
@@ -163,7 +163,7 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        <div className="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm">
+                        <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-2">
                                 Aktivitas Terbaru
                             </h2>
@@ -180,7 +180,7 @@ export default function Dashboard() {
                                             className="flex items-center justify-between text-xs text-slate-600"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#3D7ABA] shrink-0"></div>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#16605e] shrink-0"></div>
                                                 {item.teks}
                                             </div>
                                             <span className="text-slate-400 text-[10px] shrink-0 ml-2">
@@ -193,72 +193,72 @@ export default function Dashboard() {
                     </>
                 )}
 
-                {/* ========== USTADZ ========== */}
+                {/* ========== GURU ========== */}
                 {user.role === "ustadz" && (
                     <>
                         {/* Info pribadi */}
                         <div className="grid grid-cols-2 gap-2">
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    NIU
+                                    NIG
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#3D7ABA]">
-                                    {user.ustadz?.niu}
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
+                                    {user.guru?.niu}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Status
                                 </p>
                                 <p className="mt-1 text-lg font-bold text-emerald-500">
-                                    {user.ustadz?.status
+                                    {user.guru?.status
                                         ?.charAt(0)
                                         .toUpperCase() +
-                                        user.ustadz?.status?.slice(1)}
+                                        user.guru?.status?.slice(1)}
                                 </p>
                             </div>
                         </div>
 
-                        {/* Statistik - sama seperti admin */}
+                        {/* Statistik */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Total Santri
+                                    Total Siswa
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#3D7ABA]">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.totalSantri || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Total Ustadz
+                                    Total Guru
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#20B5E8]">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.totalUstadz || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Santri Putra
+                                    Siswa Putra
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-blue-500">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.santriPutra || 0}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Santri Putri
+                                    Siswa Putri
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-pink-500">
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
                                     {stats?.santriPutri || 0}
                                 </p>
                             </div>
                         </div>
 
-                        {/* Grafik Presensi Minggu Ini */}
-                        <div className="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm">
+                        {/* Grafik Presensi */}
+                        <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-2">
-                                Presensi Santri Minggu Ini
+                                Presensi Siswa Minggu Ini
                             </h2>
                             <ResponsiveContainer width="100%" height={200}>
                                 <BarChart data={grafikPresensi}>
@@ -287,22 +287,22 @@ export default function Dashboard() {
                         </div>
 
                         {/* Menu cepat */}
-                        <div className="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm">
+                        <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-2">
                                 Menu Cepat
                             </h2>
                             <div className="grid grid-cols-2 gap-2">
                                 <a
                                     href="/presensi"
-                                    className="rounded-xl bg-[#3D7ABA]/10 p-3 text-center text-xs font-medium text-[#3D7ABA]"
+                                    className="rounded-xl bg-[#16605e]/10 p-3 text-center text-xs font-medium text-[#16605e]"
                                 >
-                                    Presensi Ustadz
+                                    Presensi Guru
                                 </a>
                                 <a
                                     href="/presensi-santri"
                                     className="rounded-xl bg-emerald-50 p-3 text-center text-xs font-medium text-emerald-600"
                                 >
-                                    Presensi Santri
+                                    Presensi Siswa
                                 </a>
                                 <a
                                     href="/timeline"
@@ -312,7 +312,7 @@ export default function Dashboard() {
                                 </a>
                                 <a
                                     href="/qr"
-                                    className="rounded-xl bg-[#20B5E8]/10 p-3 text-center text-xs font-medium text-[#20B5E8]"
+                                    className="rounded-xl bg-[#16605e]/10 p-3 text-center text-xs font-medium text-[#16605e]"
                                 >
                                     QR Code
                                 </a>
@@ -321,40 +321,40 @@ export default function Dashboard() {
                     </>
                 )}
 
-                {/* ========== SANTRI ========== */}
+                {/* ========== SISWA ========== */}
                 {user.role === "santri" && (
                     <>
                         <div className="grid grid-cols-2 gap-2">
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     NIS
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#3D7ABA]">
-                                    {user.santri?.nis}
+                                <p className="mt-1 text-lg font-bold text-[#16605e]">
+                                    {user.siswa?.nis}
                                 </p>
                             </div>
-                            <div className="rounded-2xl border border-sky-100 bg-white p-3 shadow-sm">
+                            <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Status
                                 </p>
                                 <p className="mt-1 text-lg font-bold text-emerald-500">
-                                    {user.santri?.status
+                                    {user.siswa?.status
                                         ?.charAt(0)
                                         .toUpperCase() +
-                                        user.santri?.status?.slice(1)}
+                                        user.siswa?.status?.slice(1)}
                                 </p>
                             </div>
                         </div>
 
                         {/* Kalender Presensi */}
-                        <div className="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm">
+                        <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-3">
                                 Presensi Bulan Ini
                             </h2>
                             <CalendarPresensi data={presensiSantri || []} />
                         </div>
 
-                        <div className="rounded-2xl border border-sky-100 bg-white p-4 shadow-sm">
+                        <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-2">
                                 Menu Cepat
                             </h2>
@@ -373,7 +373,7 @@ export default function Dashboard() {
                                 </a>
                                 <a
                                     href="/qr"
-                                    className="rounded-xl bg-[#20B5E8]/10 p-3 text-center text-xs font-medium text-[#20B5E8]"
+                                    className="rounded-xl bg-[#16605e]/10 p-3 text-center text-xs font-medium text-[#16605e]"
                                 >
                                     QR Code
                                 </a>

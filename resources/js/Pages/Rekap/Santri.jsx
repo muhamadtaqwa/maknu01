@@ -12,34 +12,22 @@ export default function Santri() {
 
     const menu = [
         {
-            label: "Santri",
+            label: "Siswa",
             path: "/rekap/santri",
-            bg: "bg-[#3D7ABA]/10",
-            text: "text-[#3D7ABA]",
+            bg: "bg-[#009788]/10",
+            text: "text-[#009788]",
         },
         {
             label: "SPP",
             path: "/rekap/spp",
-            bg: "bg-[#20B5E8]/10",
-            text: "text-[#20B5E8]",
+            bg: "bg-teal-50",
+            text: "text-teal-600",
         },
         {
-            label: "Kitab",
+            label: "Buku",
             path: "/rekap/kitab",
             bg: "bg-orange-50",
             text: "text-orange-600",
-        },
-        {
-            label: "Kas",
-            path: "/rekap/kas",
-            bg: "bg-pink-50",
-            text: "text-pink-600",
-        },
-        {
-            label: "Anjem",
-            path: "/rekap/anjem",
-            bg: "bg-purple-50",
-            text: "text-purple-600",
         },
     ];
 
@@ -72,10 +60,10 @@ export default function Santri() {
         <AppLayout>
             <div>
                 <h2 className="text-lg font-bold text-slate-800 mb-4">
-                    Rekap Per Santri
+                    Rekap Per Siswa
                 </h2>
 
-                <div className="grid grid-cols-5 gap-2 mb-4">
+                <div className="grid grid-cols-3 gap-2 mb-4">
                     {menu.map((m) => (
                         <Link
                             key={m.path}
@@ -96,7 +84,7 @@ export default function Santri() {
                     placeholder="Cari nama atau NIS..."
                     value={search}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 outline-none mb-4"
+                    className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#009788] focus:ring-4 focus:ring-teal-100 outline-none mb-4"
                 />
 
                 {/* 2 Kolom di desktop */}
@@ -124,7 +112,7 @@ export default function Santri() {
                             </div>
                             <button
                                 onClick={() => handleLihat(s.nis)}
-                                className="text-xs bg-[#3D7ABA]/10 text-[#3D7ABA] px-3 py-1.5 rounded-full font-medium hover:bg-[#3D7ABA]/20 transition shrink-0"
+                                className="text-xs bg-[#009788]/10 text-[#009788] px-3 py-1.5 rounded-full font-medium hover:bg-[#009788]/20 transition shrink-0"
                             >
                                 Lihat
                             </button>
@@ -144,7 +132,7 @@ export default function Santri() {
                                 )
                             }
                             disabled={!santris.prev_page_url}
-                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Prev
                         </button>
@@ -161,7 +149,7 @@ export default function Santri() {
                                 )
                             }
                             disabled={!santris.next_page_url}
-                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Next
                         </button>
@@ -174,7 +162,7 @@ export default function Santri() {
                             className="absolute inset-0 bg-black/50"
                             onClick={() => setShowPopup(false)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-sky-100 max-h-[80vh] overflow-y-auto">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-teal-100 max-h-[80vh] overflow-y-auto">
                             {loading ? (
                                 <p className="text-center text-slate-400 py-8">
                                     Memuat...
@@ -183,13 +171,13 @@ export default function Santri() {
                                 <>
                                     <div className="flex items-center justify-between mb-4">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-10 h-10 bg-[#3D7ABA] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
+                                            <div className="w-10 h-10 bg-[#009788] rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
                                                 {selected?.nama_lengkap?.charAt(
                                                     0,
                                                 )}
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-[#3D7ABA]">
+                                                <h3 className="font-bold text-[#009788]">
                                                     {selected?.nama_lengkap}
                                                 </h3>
                                                 <p className="text-xs text-slate-500">

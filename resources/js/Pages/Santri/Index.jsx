@@ -33,59 +33,8 @@ export default function Index() {
     };
 
     const prodiList = [
-        "S1 Kedokteran",
-        "S1 Bimbingan dan Penyuluhan Islam",
-        "S1 Komunikasi dan Penyiaran Islam",
-        "S1 Manajemen Dakwah",
-        "S1 Pengembangan Masyarakat Islam",
-        "S1 Manajemen Haji dan Umrah",
-        "S1 Hukum Keluarga Islam",
-        "S1 Hukum Pidana Islam",
-        "S1 Hukum Ekonomi Syariah",
-        "S1 Ilmu Falak",
-        "S1 Ilmu Hukum",
-        "S1 Pendidikan Agama Islam",
-        "S1 Pendidikan Bahasa Arab",
-        "S1 Manajemen Pendidikan Islam",
-        "S1 Pendidikan Bahasa Inggris",
-        "S1 Pendidikan Guru Madrasah Ibtidaiyah",
-        "S1 Pendidikan Islam Anak Usia Dini",
-        "S1 Aqidah dan Filsafat Islam",
-        "S1 Ilmu Al-Qur'an dan Tafsir",
-        "S1 Studi Agama-Agama",
-        "S1 Tasawuf dan Psikoterapi",
-        "S1 Ilmu Seni dan Arsitektur Islam",
-        "S1 Ilmu Hadis",
-        "S1 Ekonomi Syariah",
-        "S1 Perbankan Syariah",
-        "S1 Akuntansi Syariah",
-        "S1 Manajemen",
-        "S1 Bisnis Digital",
-        "S1 Ilmu Politik",
-        "S1 Sosiologi",
-        "S1 Psikologi",
-        "S1 Gizi",
-        "S1 Biologi",
-        "S1 Fisika",
-        "S1 Kimia",
-        "S1 Matematika",
-        "S1 Pendidikan Matematika",
-        "S1 Pendidikan Fisika",
-        "S1 Pendidikan Kimia",
-        "S1 Pendidikan Biologi",
-        "S1 Teknologi Informasi",
-        "S1 Teknik Lingkungan",
-        "S2 Komunikasi dan Penyiaran Islam",
-        "S2 Ilmu Falak",
-        "S2 Hukum",
-        "S2 Pendidikan Agama Islam",
-        "S2 Manajemen Pendidikan Islam",
-        "S2 Pendidikan Bahasa Arab",
-        "S2 Ilmu Al-Qur'an dan Tafsir",
-        "S2 Ekonomi Syariah",
-        "S2 Ilmu Agama Islam",
-        "S3 Pendidikan Agama Islam",
-        "S3 Studi Islam",
+        "Rekayasa Perangkat Lunak",
+        "Teknik Komputer dan Jaringan",
     ];
 
     const { data, setData, post, put, reset, processing } = useForm({
@@ -215,23 +164,23 @@ export default function Index() {
             ? put(`/santri/${editData.id}`, {
                   onSuccess: () => {
                       closeModal();
-                      toast.success("Santri berhasil diupdate!");
+                      toast.success("Siswa berhasil diupdate!");
                   },
-                  onError: () => toast.error("Gagal mengupdate santri."),
+                  onError: () => toast.error("Gagal mengupdate siswa."),
               })
             : post("/santri", {
                   onSuccess: () => {
                       closeModal();
-                      toast.success("Santri berhasil ditambah!");
+                      toast.success("Siswa berhasil ditambah!");
                   },
-                  onError: () => toast.error("Gagal menambah santri."),
+                  onError: () => toast.error("Gagal menambah siswa."),
               });
     };
     const handleDelete = (id, nama) => {
-        if (confirm(`Hapus santri "${nama}"?`)) {
+        if (confirm(`Hapus siswa "${nama}"?`)) {
             router.delete(`/santri/${id}`, {
-                onSuccess: () => toast.success("Santri berhasil dihapus!"),
-                onError: () => toast.error("Gagal menghapus santri."),
+                onSuccess: () => toast.success("Siswa berhasil dihapus!"),
+                onError: () => toast.error("Gagal menghapus siswa."),
             });
         }
     };
@@ -250,12 +199,12 @@ export default function Index() {
             <div>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-bold text-slate-800">
-                        Data Santri
+                        Data Siswa
                     </h2>
                     {isAdmin && (
                         <button
                             onClick={openCreate}
-                            className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-4 py-2 rounded-2xl text-sm font-semibold shadow-lg hover:scale-[1.02] hover:shadow-xl transition"
+                            className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-4 py-2 rounded-2xl text-sm font-semibold shadow-lg hover:scale-[1.02] hover:shadow-xl transition"
                         >
                             + Tambah
                         </button>
@@ -268,24 +217,24 @@ export default function Index() {
                         placeholder="Cari nama atau NIS..."
                         value={search}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 outline-none"
+                        className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#009788] focus:ring-4 focus:ring-teal-100 outline-none"
                     />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {santris.data.length === 0 && (
                         <p className="text-center text-slate-400 py-10 sm:col-span-2">
-                            Tidak ada data santri
+                            Tidak ada data siswa
                         </p>
                     )}
                     {santris.data.map((santri) => (
                         <div
                             key={santri.id}
-                            className="rounded-[30px] border border-sky-100 bg-white p-4 shadow-2xl hover:shadow-xl transition-shadow"
+                            className="rounded-[30px] border border-teal-100 bg-white p-4 shadow-2xl hover:shadow-xl transition-shadow"
                         >
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs bg-[#3D7ABA]/10 text-[#3D7ABA] px-2.5 py-1 rounded-full font-medium">
+                                    <span className="text-xs bg-[#009788]/10 text-[#009788] px-2.5 py-1 rounded-full font-medium">
                                         {santri.nis}
                                     </span>
                                     <span
@@ -305,7 +254,7 @@ export default function Index() {
                                     <div className="flex gap-1">
                                         <button
                                             onClick={() => openEdit(santri)}
-                                            className="bg-slate-100 px-2.5 py-1 rounded-lg text-xs hover:bg-[#3D7ABA]/10 hover:text-[#3D7ABA] transition"
+                                            className="bg-slate-100 px-2.5 py-1 rounded-lg text-xs hover:bg-[#009788]/10 hover:text-[#009788] transition"
                                         >
                                             Edit
                                         </button>
@@ -343,7 +292,7 @@ export default function Index() {
                                                 onClick={() =>
                                                     salin(santri.nik)
                                                 }
-                                                className="text-slate-400 hover:text-[#3D7ABA]"
+                                                className="text-slate-400 hover:text-[#009788]"
                                                 aria-label="Salin NIK"
                                             >
                                                 <i className="fa-solid fa-copy text-[10px]"></i>
@@ -370,7 +319,7 @@ export default function Index() {
                                 )}
                                 {santri.program_studi && (
                                     <Row
-                                        label="Prodi"
+                                        label="Jurusan"
                                         value={santri.program_studi}
                                     />
                                 )}
@@ -386,9 +335,6 @@ export default function Index() {
                                         value={santri.tahun_masuk}
                                     />
                                 )}
-                                {santri.kamar && (
-                                    <Row label="Kamar" value={santri.kamar} />
-                                )}
                                 {santri.nomor_hp && (
                                     <div className="flex justify-between">
                                         <span className="text-slate-400">
@@ -402,7 +348,7 @@ export default function Index() {
                                                 onClick={() =>
                                                     salin(santri.nomor_hp)
                                                 }
-                                                className="text-slate-400 hover:text-[#3D7ABA]"
+                                                className="text-slate-400 hover:text-[#009788]"
                                                 aria-label="Salin nomor HP"
                                             >
                                                 <i className="fa-solid fa-copy text-[10px]"></i>
@@ -427,7 +373,7 @@ export default function Index() {
                                 )
                             }
                             disabled={!santris.prev_page_url}
-                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Prev
                         </button>
@@ -444,7 +390,7 @@ export default function Index() {
                                 )
                             }
                             disabled={!santris.next_page_url}
-                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Next
                         </button>
@@ -458,9 +404,9 @@ export default function Index() {
                                 className="fixed inset-0 bg-black/50"
                                 onClick={closeModal}
                             ></div>
-                            <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm md:max-w-5xl p-6 border border-sky-100 my-4">
+                            <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm md:max-w-5xl p-6 border border-teal-100 my-4">
                                 <h3 className="font-semibold text-lg mb-4">
-                                    {editData ? "Edit" : "Tambah"} Santri
+                                    {editData ? "Edit" : "Tambah"} Siswa
                                 </h3>
                                 <form
                                     onSubmit={submit}
@@ -483,10 +429,10 @@ export default function Index() {
                                                     Putra/Putri *
                                                 </option>
                                                 <option value="laki-laki">
-                                                    Putra (PA)
+                                                    Putra (L)
                                                 </option>
                                                 <option value="perempuan">
-                                                    Putri (PI)
+                                                    Putri (P)
                                                 </option>
                                             </select>
                                         ) : (
@@ -668,9 +614,7 @@ export default function Index() {
                                             }
                                             className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white outline-none"
                                         >
-                                            <option value="">
-                                                Program Studi
-                                            </option>
+                                            <option value="">Jurusan</option>
                                             {prodiList.map((p) => (
                                                 <option key={p} value={p}>
                                                     {p}
@@ -698,15 +642,6 @@ export default function Index() {
                                                     "tahun_masuk",
                                                     e.target.value,
                                                 )
-                                            }
-                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Kamar"
-                                            value={data.kamar}
-                                            onChange={(e) =>
-                                                setData("kamar", e.target.value)
                                             }
                                             className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
                                         />
@@ -848,7 +783,7 @@ export default function Index() {
                                         <button
                                             type="submit"
                                             disabled={processing}
-                                            className="flex-1 bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-sm font-semibold shadow-lg transition disabled:opacity-50"
+                                            className="flex-1 bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-sm font-semibold shadow-lg transition disabled:opacity-50"
                                         >
                                             {editData ? "Update" : "Simpan"}
                                         </button>

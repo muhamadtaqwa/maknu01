@@ -6,34 +6,22 @@ export default function Kitab() {
 
     const menu = [
         {
-            label: "Santri",
+            label: "Siswa",
             path: "/rekap/santri",
-            bg: "bg-[#3D7ABA]/10",
-            text: "text-[#3D7ABA]",
+            bg: "bg-[#009788]/10",
+            text: "text-[#009788]",
         },
         {
             label: "SPP",
             path: "/rekap/spp",
-            bg: "bg-[#20B5E8]/10",
-            text: "text-[#20B5E8]",
+            bg: "bg-teal-50",
+            text: "text-teal-600",
         },
         {
-            label: "Kitab",
+            label: "Buku",
             path: "/rekap/kitab",
             bg: "bg-orange-50",
             text: "text-orange-600",
-        },
-        {
-            label: "Kas",
-            path: "/rekap/kas",
-            bg: "bg-pink-50",
-            text: "text-pink-600",
-        },
-        {
-            label: "Anjem",
-            path: "/rekap/anjem",
-            bg: "bg-purple-50",
-            text: "text-purple-600",
         },
     ];
 
@@ -41,7 +29,7 @@ export default function Kitab() {
         <AppLayout>
             <div>
                 <h2 className="text-lg font-bold text-slate-800 mb-4">
-                    Rekap Kitab
+                    Rekap Buku
                 </h2>
 
                 <div className="space-y-2 mb-4">
@@ -72,7 +60,7 @@ export default function Kitab() {
                 <p className="text-sm font-bold text-slate-400 uppercase mb-3">
                     Pilih jenis rekap
                 </p>
-                <div className="grid grid-cols-5 gap-2 mb-4">
+                <div className="grid grid-cols-3 gap-2 mb-4">
                     {menu.map((m) => (
                         <Link
                             key={m.path}
@@ -92,13 +80,13 @@ export default function Kitab() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {rekap.length === 0 && (
                         <p className="text-center text-slate-400 py-10 md:col-span-2">
-                            Tidak ada data Kitab
+                            Tidak ada data Buku
                         </p>
                     )}
                     {rekap.map((s) => (
                         <div
                             key={s.nis}
-                            className="rounded-[30px] border border-sky-100 bg-white p-4 shadow-sm hover:shadow-md transition-all"
+                            className="rounded-[30px] border border-teal-100 bg-white p-4 shadow-sm hover:shadow-md transition-all"
                         >
                             {/* Header card - perbaikan nama panjang */}
                             <div className="flex items-start justify-between mb-3 gap-2">
@@ -124,7 +112,7 @@ export default function Kitab() {
                                 </span>
                             </div>
 
-                            {/* List Nama Kitab */}
+                            {/* List Nama Buku */}
                             {s.per_kitab && s.per_kitab.length > 0 && (
                                 <div className="mb-2 space-y-1">
                                     {s.per_kitab.map((k) => (

@@ -15,7 +15,7 @@ export default function Index() {
     const [sending, setSending] = useState(false);
     const scannerRef = useRef(null);
     const inputRef = useRef(null);
-    const qrRef = useRef(null); // Tambahan ref untuk QR code
+    const qrRef = useRef(null);
 
     const isAdmin = user.role === "admin";
     const profil = user.ustadz || user.santri;
@@ -41,7 +41,6 @@ export default function Index() {
         }
     }, [mode]);
 
-    // Kirim presensi saat scan berhasil
     useEffect(() => {
         if (scanResult && isAdmin) {
             kirimPresensi(scanResult);
@@ -60,7 +59,6 @@ export default function Index() {
                     setScanResult(null);
                     setManualInput("");
                     setSending(false);
-                    // Auto-restart setelah 1,5 detik
                     setTimeout(() => {
                         if (mode === "camera") startScan();
                     }, 1500);
@@ -68,7 +66,7 @@ export default function Index() {
                 onError: (errors) => {
                     toast.error(
                         errors?.error ||
-                            "Santri sudah presensi atau data tidak ditemukan.",
+                            "Siswa sudah presensi atau data tidak ditemukan.",
                     );
                     setTimeout(() => {
                         setScanResult(null);
@@ -139,7 +137,6 @@ export default function Index() {
         }
     };
 
-    // Fungsi untuk download QR code
     const downloadQRCode = () => {
         const svg = qrRef.current?.querySelector("svg");
         if (!svg) {
@@ -148,19 +145,14 @@ export default function Index() {
         }
 
         try {
-            // Clone SVG untuk dimodifikasi
             const cloneSvg = svg.cloneNode(true);
-
-            // Buat canvas dengan ukuran yang sama
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
 
-            // Set ukuran canvas (2x untuk kualitas lebih baik)
-            const size = 180 * 2; // 360px
+            const size = 180 * 2;
             canvas.width = size;
             canvas.height = size;
 
-            // Convert SVG to data URL
             const svgData = new XMLSerializer().serializeToString(cloneSvg);
             const svgBlob = new Blob([svgData], {
                 type: "image/svg+xml;charset=utf-8",
@@ -169,20 +161,15 @@ export default function Index() {
 
             const img = new Image();
             img.onload = () => {
-                // Background putih
                 ctx.fillStyle = "#FFFFFF";
                 ctx.fillRect(0, 0, size, size);
-
-                // Draw image
                 ctx.drawImage(img, 0, 0, size, size);
 
-                // Download
                 const link = document.createElement("a");
                 link.download = `QR-${nama}-${qrValue}.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
 
-                // Cleanup
                 URL.revokeObjectURL(url);
                 toast.success("QR Code berhasil didownload!");
             };
@@ -203,7 +190,7 @@ export default function Index() {
         <AppLayout>
             <div className="max-w-md mx-auto text-center">
                 <h2 className="text-lg font-bold text-slate-800 mb-6">
-                    {isAdmin ? "Presensi Santri" : "QR Code Saya"}
+                    {isAdmin ? "Presensi Siswa" : "QR Code Saya"}
                 </h2>
 
                 {isAdmin ? (
@@ -214,7 +201,7 @@ export default function Index() {
                                     setMode("camera");
                                     stopScan();
                                 }}
-                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${mode === "camera" ? "bg-white shadow text-[#3D7ABA]" : "text-slate-500"}`}
+                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${mode === "camera" ? "bg-white shadow text-[#009788]" : "text-slate-500"}`}
                             >
                                 Kamera
                             </button>
@@ -223,7 +210,7 @@ export default function Index() {
                                     setMode("manual");
                                     stopScan();
                                 }}
-                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${mode === "manual" ? "bg-white shadow text-[#3D7ABA]" : "text-slate-500"}`}
+                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${mode === "manual" ? "bg-white shadow text-[#009788]" : "text-slate-500"}`}
                             >
                                 Input Manual
                             </button>
@@ -239,7 +226,7 @@ export default function Index() {
                                     <button
                                         onClick={startScan}
                                         disabled={sending}
-                                        className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-8 py-4 rounded-full text-base font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                                        className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-8 py-4 rounded-full text-base font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
                                     >
                                         Mulai Scan
                                     </button>
@@ -267,13 +254,13 @@ export default function Index() {
                                         setManualInput(e.target.value)
                                     }
                                     placeholder="Scan barcode atau input manual..."
-                                    className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-xs text-center font-mono tracking-widest focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 outline-none"
+                                    className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-xs text-center font-mono tracking-widest focus:border-[#009788] focus:ring-4 focus:ring-teal-100 outline-none"
                                     autoFocus
                                 />
                                 <button
                                     type="submit"
                                     disabled={sending}
-                                    className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-8 py-3 rounded-full text-sm font-semibold shadow-lg disabled:opacity-50"
+                                    className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-8 py-3 rounded-full text-sm font-semibold shadow-lg disabled:opacity-50"
                                 >
                                     Simpan Presensi
                                 </button>
@@ -287,7 +274,7 @@ export default function Index() {
                         )}
                     </>
                 ) : (
-                    <div className="bg-gradient-to-br from-[#3D7ABA] to-[#20B5E8] rounded-[30px] p-8 shadow-2xl text-white">
+                    <div className="bg-gradient-to-br from-[#009788] to-[#00b5a5] rounded-[30px] p-8 shadow-2xl text-white">
                         <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 border-2 border-white/30">
                             {nama?.charAt(0) || "A"}
                         </div>
@@ -307,11 +294,10 @@ export default function Index() {
                             />
                         </div>
 
-                        {/* Tombol Download tanpa icon */}
                         <div className="mt-4">
                             <button
                                 onClick={downloadQRCode}
-                                className="bg-white text-[#3D7ABA] px-6 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all mx-auto"
+                                className="bg-white text-[#009788] px-6 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all mx-auto"
                             >
                                 Download QR Code
                             </button>
@@ -321,8 +307,8 @@ export default function Index() {
 
                 <p className="text-xs text-slate-400 mt-6">
                     {isAdmin
-                        ? "Scan QR santri untuk presensi"
-                        : `© ${new Date().getFullYear()} Pondok Pesantren Al-Amanah`}
+                        ? "Scan QR untuk presensi"
+                        : `© ${new Date().getFullYear()} MAK NU 01 Kota Semarang`}
                 </p>
             </div>
         </AppLayout>

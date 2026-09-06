@@ -65,12 +65,12 @@ export default function Index() {
             <div>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-bold text-slate-800">
-                        Timeline Pondok
+                        Timeline Sekolah
                     </h2>
                     {isAdmin && (
                         <button
                             onClick={openCreate}
-                            className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-4 py-2 rounded-2xl text-sm font-semibold shadow-lg"
+                            className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-4 py-2 rounded-2xl text-sm font-semibold shadow-lg"
                         >
                             + Tambah
                         </button>
@@ -83,7 +83,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/50"
                             onClick={() => setShowForm(false)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-8 border border-sky-100">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-8 border border-teal-100">
                             <h3 className="font-semibold text-lg mb-4">
                                 {editId ? "Edit" : "Tambah"} Acara
                             </h3>
@@ -137,7 +137,7 @@ export default function Index() {
                                     <button
                                         type="submit"
                                         disabled={processing}
-                                        className="flex-1 bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-3 rounded-2xl text-sm font-semibold"
+                                        className="flex-1 bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-3 rounded-2xl text-sm font-semibold"
                                     >
                                         {editId ? "Update" : "Simpan"}
                                     </button>
@@ -147,7 +147,7 @@ export default function Index() {
                     </div>
                 )}
 
-                <div className="relative pl-6 ml-[7px] space-y-3 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-[#3D7ABA]/20">
+                <div className="relative pl-6 ml-[7px] space-y-3 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-[#009788]/20">
                     {timeline.length === 0 && (
                         <p className="text-slate-400 text-sm">
                             Belum ada acara
@@ -155,11 +155,11 @@ export default function Index() {
                     )}
                     {timeline.map((item) => (
                         <div key={item.id} className="relative">
-                            <div className="absolute -left-[31px] top-6 w-4 h-4 bg-[#3D7ABA] rounded-full border-2 border-white shadow"></div>
-                            <div className="bg-white rounded-2xl border border-sky-100 shadow-sm p-3">
+                            <div className="absolute -left-[31px] top-6 w-4 h-4 bg-[#009788] rounded-full border-2 border-white shadow"></div>
+                            <div className="bg-white rounded-2xl border border-teal-100 shadow-sm p-3">
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1">
-                                        <p className="text-[11px] text-[#3D7ABA] font-medium">
+                                        <p className="text-[11px] text-[#009788] font-medium">
                                             {new Date(
                                                 item.tanggal,
                                             ).toLocaleDateString("id-ID", {

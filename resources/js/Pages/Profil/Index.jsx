@@ -11,59 +11,8 @@ export default function Index() {
     const [loadingNotif, setLoadingNotif] = useState(null);
 
     const prodiList = [
-        "S1 Kedokteran",
-        "S1 Bimbingan dan Penyuluhan Islam",
-        "S1 Komunikasi dan Penyiaran Islam",
-        "S1 Manajemen Dakwah",
-        "S1 Pengembangan Masyarakat Islam",
-        "S1 Manajemen Haji dan Umrah",
-        "S1 Hukum Keluarga Islam",
-        "S1 Hukum Pidana Islam",
-        "S1 Hukum Ekonomi Syariah",
-        "S1 Ilmu Falak",
-        "S1 Ilmu Hukum",
-        "S1 Pendidikan Agama Islam",
-        "S1 Pendidikan Bahasa Arab",
-        "S1 Manajemen Pendidikan Islam",
-        "S1 Pendidikan Bahasa Inggris",
-        "S1 Pendidikan Guru Madrasah Ibtidaiyah",
-        "S1 Pendidikan Islam Anak Usia Dini",
-        "S1 Aqidah dan Filsafat Islam",
-        "S1 Ilmu Al-Qur'an dan Tafsir",
-        "S1 Studi Agama-Agama",
-        "S1 Tasawuf dan Psikoterapi",
-        "S1 Ilmu Seni dan Arsitektur Islam",
-        "S1 Ilmu Hadis",
-        "S1 Ekonomi Syariah",
-        "S1 Perbankan Syariah",
-        "S1 Akuntansi Syariah",
-        "S1 Manajemen",
-        "S1 Bisnis Digital",
-        "S1 Ilmu Politik",
-        "S1 Sosiologi",
-        "S1 Psikologi",
-        "S1 Gizi",
-        "S1 Biologi",
-        "S1 Fisika",
-        "S1 Kimia",
-        "S1 Matematika",
-        "S1 Pendidikan Matematika",
-        "S1 Pendidikan Fisika",
-        "S1 Pendidikan Kimia",
-        "S1 Pendidikan Biologi",
-        "S1 Teknologi Informasi",
-        "S1 Teknik Lingkungan",
-        "S2 Komunikasi dan Penyiaran Islam",
-        "S2 Ilmu Falak",
-        "S2 Hukum",
-        "S2 Pendidikan Agama Islam",
-        "S2 Manajemen Pendidikan Islam",
-        "S2 Pendidikan Bahasa Arab",
-        "S2 Ilmu Al-Qur'an dan Tafsir",
-        "S2 Ekonomi Syariah",
-        "S2 Ilmu Agama Islam",
-        "S3 Pendidikan Agama Islam",
-        "S3 Studi Islam",
+        "Rekayasa Perangkat Lunak",
+        "Teknik Komputer dan Jaringan",
     ];
 
     const provinsiList = [
@@ -136,7 +85,6 @@ export default function Index() {
                 provinsi: profil?.provinsi || "",
                 program_studi: profil?.program_studi || "",
                 angkatan: profil?.angkatan || "",
-                kamar: profil?.kamar || "",
                 nomor_hp: profil?.nomor_hp || "",
                 nama_ayah: profil?.nama_ayah || "",
                 nik_ayah: profil?.nik_ayah || "",
@@ -221,15 +169,19 @@ export default function Index() {
             <div className="max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                     {/* Kolom 1: Card Profil */}
-                    <div className="rounded-[30px] bg-gradient-to-br from-[#3D7ABA] to-[#20B5E8] p-6 shadow-2xl text-white text-center">
+                    <div className="rounded-[30px] bg-gradient-to-br from-[#009788] to-[#00b5a5] p-6 shadow-2xl text-white text-center">
                         <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-3xl font-bold mb-3 border-2 border-white/30 mx-auto">
                             {profil?.nama_lengkap?.charAt(0) || "A"}
                         </div>
                         <h3 className="font-bold text-lg">
-                            {profil?.nama_lengkap || "Admin Pondok"}
+                            {profil?.nama_lengkap || "Admin Sekolah"}
                         </h3>
                         <p className="text-white/80 text-sm capitalize mt-1">
-                            {user.role}
+                            {user.role === "ustadz"
+                                ? "Guru"
+                                : user.role === "santri"
+                                  ? "Siswa"
+                                  : user.role}
                         </p>
                         <p className="text-xs text-white/60 mt-1">
                             {user.username}
@@ -238,14 +190,14 @@ export default function Index() {
 
                     {/* Kolom 2: Informasi Profil / Ganti Password */}
                     {(user.role === "ustadz" || user.role === "santri") && (
-                        <div className="rounded-[30px] border border-sky-100 bg-white p-5 shadow-2xl">
+                        <div className="rounded-[30px] border border-teal-100 bg-white p-5 shadow-2xl">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="font-semibold text-sm text-slate-700 flex items-center gap-2">
                                     Informasi Profil
                                 </h3>
                                 <button
                                     onClick={() => setShowModal(true)}
-                                    className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow-lg"
+                                    className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow-lg"
                                 >
                                     Edit
                                 </button>
@@ -253,7 +205,7 @@ export default function Index() {
                             <div className="text-xs text-slate-500 space-y-1.5 max-h-[400px] overflow-y-auto pr-1">
                                 {user.role === "ustadz" && (
                                     <>
-                                        <Row label="NIU" value={profil?.niu} />
+                                        <Row label="NIG" value={profil?.niu} />
                                         <Row
                                             label="NIP/NUPTK"
                                             value={profil?.nip_nuptk}
@@ -322,16 +274,12 @@ export default function Index() {
                                             }
                                         />
                                         <Row
-                                            label="Program Studi"
+                                            label="Jurusan"
                                             value={profil?.program_studi}
                                         />
                                         <Row
                                             label="Angkatan"
                                             value={profil?.angkatan}
-                                        />
-                                        <Row
-                                            label="Kamar"
-                                            value={profil?.kamar}
                                         />
                                         <Row
                                             label="Nomor HP"
@@ -360,7 +308,7 @@ export default function Index() {
                     )}
 
                     {user.role === "admin" && (
-                        <div className="rounded-[30px] border border-sky-100 bg-white p-5 shadow-2xl">
+                        <div className="rounded-[30px] border border-teal-100 bg-white p-5 shadow-2xl">
                             <h3 className="font-semibold text-sm text-slate-700 mb-3">
                                 Ganti Password User
                             </h3>
@@ -397,7 +345,7 @@ export default function Index() {
                                 <button
                                     type="submit"
                                     disabled={passwordForm.processing}
-                                    className="w-full bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2 rounded-xl text-sm font-semibold shadow-lg disabled:opacity-50"
+                                    className="w-full bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2 rounded-xl text-sm font-semibold shadow-lg disabled:opacity-50"
                                 >
                                     Simpan
                                 </button>
@@ -405,36 +353,8 @@ export default function Index() {
                         </div>
                     )}
 
-                    {/* Kolom 3: Test Notifikasi + Logout untuk admin */}
+                    {/* Kolom 3: Logout untuk admin */}
                     <div className="space-y-4">
-                        {user.role === "admin" && (
-                            <div className="rounded-[30px] border border-sky-100 bg-white p-5 shadow-2xl">
-                                <h3 className="font-semibold text-sm text-slate-700 mb-3 flex items-center gap-2">
-                                    Test Notifikasi
-                                </h3>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {notifList.map((label) => (
-                                        <button
-                                            key={label}
-                                            onClick={() =>
-                                                kirimTestNotif(label)
-                                            }
-                                            disabled={
-                                                loadingNotif ===
-                                                label.toLowerCase()
-                                            }
-                                            className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2 rounded-xl text-xs font-semibold shadow-md disabled:opacity-50"
-                                        >
-                                            {loadingNotif ===
-                                            label.toLowerCase()
-                                                ? "..."
-                                                : label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
                         <button
                             onClick={handleLogout}
                             className="w-full bg-red-500 text-white py-3 rounded-2xl text-sm font-semibold shadow-lg hover:bg-red-600 transition"
@@ -451,7 +371,7 @@ export default function Index() {
                                 className="fixed inset-0 bg-black/50"
                                 onClick={() => setShowModal(false)}
                             ></div>
-                            <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-sky-100 my-4">
+                            <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-teal-100 my-4">
                                 <h3 className="font-semibold text-lg mb-4">
                                     Edit Profil
                                 </h3>
@@ -736,7 +656,7 @@ export default function Index() {
                                                 className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white outline-none"
                                             >
                                                 <option value="">
-                                                    Pilih Program Studi
+                                                    Pilih Jurusan
                                                 </option>
                                                 {prodiList.map((p) => (
                                                     <option key={p} value={p}>
@@ -751,18 +671,6 @@ export default function Index() {
                                                 onChange={(e) =>
                                                     setData(
                                                         "angkatan",
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder="Kamar"
-                                                value={data.kamar}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "kamar",
                                                         e.target.value,
                                                     )
                                                 }
@@ -894,7 +802,7 @@ export default function Index() {
                                         <button
                                             type="submit"
                                             disabled={processing}
-                                            className="flex-1 bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-sm font-semibold"
+                                            className="flex-1 bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-sm font-semibold"
                                         >
                                             Simpan
                                         </button>

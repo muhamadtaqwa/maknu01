@@ -112,7 +112,7 @@ class DashboardController extends Controller
             $nama = 'Seseorang';
             if ($l->user) {
                 if ($l->user->role === 'admin') {
-                    $nama = 'Admin Pondok';
+                    $nama = 'Admin Sekolah';
                 } else {
                     $nama = $l->user->ustadz->nama_lengkap ?? $l->user->santri->nama_lengkap ?? $l->user->username;
                 }

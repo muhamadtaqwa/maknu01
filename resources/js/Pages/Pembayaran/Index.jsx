@@ -328,13 +328,13 @@ export default function Index() {
                         </button>
                         <button
                             onClick={() => setShowGenerate(true)}
-                            className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-xs font-semibold shadow-lg"
+                            className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-xs font-semibold shadow-lg"
                         >
                             Generate
                         </button>
                         <button
                             onClick={openCreate}
-                            className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-xs font-semibold shadow-lg"
+                            className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-xs font-semibold shadow-lg"
                         >
                             + Tambah
                         </button>
@@ -344,10 +344,10 @@ export default function Index() {
                 <div className="mb-4">
                     <input
                         type="text"
-                        placeholder="Cari NIS, nama santri, atau pembayaran..."
+                        placeholder="Cari NIS, nama siswa, atau pembayaran..."
                         value={search}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 outline-none"
+                        className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#009788] focus:ring-4 focus:ring-teal-100 outline-none"
                     />
                 </div>
 
@@ -397,7 +397,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/70"
                             onClick={() => setShowBukti(null)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-lg p-4 border border-sky-100">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-lg p-4 border border-teal-100">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="font-semibold text-lg">
                                     Bukti Transfer
@@ -425,7 +425,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/50"
                             onClick={() => setVerifikasiTarget(null)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-6 border border-sky-100">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-6 border border-teal-100">
                             <h3 className="font-semibold text-lg mb-4">
                                 Verifikasi Pembayaran
                             </h3>
@@ -438,7 +438,7 @@ export default function Index() {
                             )}
                             <div className="text-xs text-slate-500 mb-3">
                                 <p>
-                                    Santri:{" "}
+                                    Siswa:{" "}
                                     {verifikasiTarget.santri?.nama_lengkap}
                                 </p>
                                 <p>
@@ -505,7 +505,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/50"
                             onClick={() => setShowKategori(false)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-sky-100">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-teal-100">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="font-semibold text-lg">
                                     Kategori Tagihan
@@ -521,7 +521,7 @@ export default function Index() {
                                 {jenisPembayaran?.map((j) => (
                                     <span
                                         key={j.id}
-                                        className="text-xs bg-[#3D7ABA]/10 text-[#3D7ABA] px-3 py-1.5 rounded-full flex items-center gap-2"
+                                        className="text-xs bg-[#009788]/10 text-[#009788] px-3 py-1.5 rounded-full flex items-center gap-2"
                                     >
                                         {j.nama}
                                         <button
@@ -571,7 +571,7 @@ export default function Index() {
                                 />
                                 <button
                                     type="submit"
-                                    className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-5 py-2.5 rounded-2xl text-sm font-semibold"
+                                    className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-5 py-2.5 rounded-2xl text-sm font-semibold"
                                 >
                                     Tambah
                                 </button>
@@ -587,7 +587,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/50"
                             onClick={() => setShowGenerate(false)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-sky-100">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-teal-100">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="font-semibold text-lg">
                                     Generate Tagihan
@@ -768,7 +768,7 @@ export default function Index() {
                                     <button
                                         type="submit"
                                         disabled={generateForm.processing}
-                                        className="flex-1 bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-sm font-semibold"
+                                        className="flex-1 bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-sm font-semibold"
                                     >
                                         Generate
                                     </button>
@@ -798,7 +798,7 @@ export default function Index() {
                         return (
                             <div
                                 key={p.id}
-                                className="rounded-[30px] border border-sky-100 bg-white p-4 shadow-2xl"
+                                className="rounded-[30px] border border-teal-100 bg-white p-4 shadow-2xl"
                             >
                                 <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-2">
@@ -825,7 +825,7 @@ export default function Index() {
                                         <div className="flex gap-1">
                                             <button
                                                 onClick={() => openEdit(p)}
-                                                className="bg-slate-100 px-2.5 py-1 rounded-lg text-xs hover:bg-[#3D7ABA]/10 hover:text-[#3D7ABA] transition"
+                                                className="bg-slate-100 px-2.5 py-1 rounded-lg text-xs hover:bg-[#009788]/10 hover:text-[#009788] transition"
                                             >
                                                 Edit
                                             </button>
@@ -849,7 +849,7 @@ export default function Index() {
                                 <div className="text-[11px] text-slate-500 space-y-0.5 mb-2">
                                     <Row label="NIS" value={p.nis} />
                                     <Row
-                                        label="Santri"
+                                        label="Siswa"
                                         value={p.santri?.nama_lengkap}
                                     />
                                     <Row
@@ -961,7 +961,7 @@ export default function Index() {
                                 )
                             }
                             disabled={!pembayaran.prev_page_url}
-                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Prev
                         </button>
@@ -978,7 +978,7 @@ export default function Index() {
                                 )
                             }
                             disabled={!pembayaran.next_page_url}
-                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Next
                         </button>
@@ -992,7 +992,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/50"
                             onClick={closeModal}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-sky-100">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-md p-6 border border-teal-100">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="font-semibold text-lg">
                                     {editData ? "Edit" : "Tambah"} Pembayaran
@@ -1014,7 +1014,7 @@ export default function Index() {
                                         className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white"
                                         required
                                     >
-                                        <option value="">Pilih Santri</option>
+                                        <option value="">Pilih Siswa</option>
                                         {santris.map((s) => (
                                             <option key={s.nis} value={s.nis}>
                                                 {s.nama_lengkap} ({s.nis})
@@ -1158,7 +1158,7 @@ export default function Index() {
                                     <button
                                         type="submit"
                                         disabled={processing}
-                                        className="flex-1 bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-sm font-semibold"
+                                        className="flex-1 bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-sm font-semibold"
                                     >
                                         {editData ? "Update" : "Simpan"}
                                     </button>
@@ -1175,7 +1175,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/50"
                             onClick={() => setDeleteTarget(null)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-6 border border-sky-100 text-center">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-6 border border-teal-100 text-center">
                             <h3 className="font-semibold text-lg">
                                 Hapus Pembayaran?
                             </h3>
@@ -1208,7 +1208,7 @@ export default function Index() {
                             className="absolute inset-0 bg-black/50"
                             onClick={() => setDeleteKategoriTarget(null)}
                         ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-6 border border-sky-100 text-center">
+                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-6 border border-teal-100 text-center">
                             <h3 className="font-semibold text-lg">
                                 Hapus Kategori?
                             </h3>

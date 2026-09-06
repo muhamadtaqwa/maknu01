@@ -17,38 +17,26 @@ export default function Index() {
 
     const menu = [
         {
-            label: "Santri",
+            label: "Siswa",
             path: "/rekap/santri",
-            bg: "bg-[#3D7ABA]/10",
-            text: "text-[#3D7ABA]",
+            bg: "bg-[#009788]/10",
+            text: "text-[#009788]",
         },
         {
             label: "SPP",
             path: "/rekap/spp",
-            bg: "bg-[#20B5E8]/10",
-            text: "text-[#20B5E8]",
+            bg: "bg-teal-50",
+            text: "text-teal-600",
         },
         {
-            label: "Kitab",
+            label: "Buku",
             path: "/rekap/kitab",
             bg: "bg-orange-50",
             text: "text-orange-600",
         },
-        {
-            label: "Kas",
-            path: "/rekap/kas",
-            bg: "bg-pink-50",
-            text: "text-pink-600",
-        },
-        {
-            label: "Anjem",
-            path: "/rekap/anjem",
-            bg: "bg-purple-50",
-            text: "text-purple-600",
-        },
     ];
 
-    const COLORS = ["#3D7ABA", "#20B5E8", "#f97316", "#ec4899"];
+    const COLORS = ["#009788", "#00b5a5", "#f97316"];
     const pieData = [
         { name: "Lunas", value: totalLunas },
         { name: "Belum", value: totalBelum },
@@ -69,7 +57,7 @@ export default function Index() {
                         <span className="text-sm text-slate-500">
                             Total Semua
                         </span>
-                        <span className="text-base font-extrabold text-[#3D7ABA] font-mono tracking-tight">
+                        <span className="text-base font-extrabold text-[#009788] font-mono tracking-tight">
                             {formatRupiah(totalSemua)}
                         </span>
                     </div>
@@ -93,7 +81,7 @@ export default function Index() {
                 <p className="text-sm font-bold text-slate-400 uppercase mb-3">
                     Pilih jenis rekap
                 </p>
-                <div className="grid grid-cols-5 gap-2 mb-4">
+                <div className="grid grid-cols-3 gap-2 mb-4">
                     {menu.map((m) => (
                         <Link
                             key={m.path}
@@ -111,7 +99,7 @@ export default function Index() {
 
                 {/* Grafik */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="rounded-[30px] border border-sky-100 bg-white p-4 shadow-2xl">
+                    <div className="rounded-[30px] border border-teal-100 bg-white p-4 shadow-2xl">
                         <h3 className="text-sm font-bold text-slate-700 mb-2">
                             Total per Jenis
                         </h3>
@@ -159,7 +147,7 @@ export default function Index() {
                         </div>
                     </div>
 
-                    <div className="rounded-[30px] border border-sky-100 bg-white p-4 shadow-2xl">
+                    <div className="rounded-[30px] border border-teal-100 bg-white p-4 shadow-2xl">
                         <h3 className="text-sm font-bold text-slate-700 mb-2">
                             Lunas vs Belum
                         </h3>

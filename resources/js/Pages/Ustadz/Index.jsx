@@ -71,23 +71,23 @@ export default function Index() {
             ? put(`/ustadz/${editData.id}`, {
                   onSuccess: () => {
                       closeModal();
-                      toast.success("Ustadz berhasil diupdate!");
+                      toast.success("Guru berhasil diupdate!");
                   },
-                  onError: () => toast.error("Gagal mengupdate ustadz."),
+                  onError: () => toast.error("Gagal mengupdate guru."),
               })
             : post("/ustadz", {
                   onSuccess: () => {
                       closeModal();
-                      toast.success("Ustadz berhasil ditambah!");
+                      toast.success("Guru berhasil ditambah!");
                   },
-                  onError: () => toast.error("Gagal menambah ustadz."),
+                  onError: () => toast.error("Gagal menambah guru."),
               });
     };
     const handleDelete = (id, nama) => {
-        if (confirm(`Hapus ustadz "${nama}"?`)) {
+        if (confirm(`Hapus guru "${nama}"?`)) {
             router.delete(`/ustadz/${id}`, {
-                onSuccess: () => toast.success("Ustadz berhasil dihapus!"),
-                onError: () => toast.error("Gagal menghapus ustadz."),
+                onSuccess: () => toast.success("Guru berhasil dihapus!"),
+                onError: () => toast.error("Gagal menghapus guru."),
             });
         }
     };
@@ -112,12 +112,12 @@ export default function Index() {
             <div>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-bold text-slate-800">
-                        Data Ustadz
+                        Data Guru
                     </h2>
                     {isAdmin && (
                         <button
                             onClick={openCreate}
-                            className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white px-4 py-2 rounded-2xl text-sm font-semibold shadow-lg hover:scale-[1.02] hover:shadow-xl transition"
+                            className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-4 py-2 rounded-2xl text-sm font-semibold shadow-lg hover:scale-[1.02] hover:shadow-xl transition"
                         >
                             + Tambah
                         </button>
@@ -127,27 +127,27 @@ export default function Index() {
                 <div className="mb-4">
                     <input
                         type="text"
-                        placeholder="Cari nama atau NIU..."
+                        placeholder="Cari nama atau NIG..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 outline-none"
+                        className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#009788] focus:ring-4 focus:ring-teal-100 outline-none"
                     />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {filtered.length === 0 && (
                         <p className="text-center text-slate-400 py-10 sm:col-span-2">
-                            Tidak ada data ustadz
+                            Tidak ada data guru
                         </p>
                     )}
                     {filtered.map((u) => (
                         <div
                             key={u.id}
-                            className="rounded-[30px] border border-sky-100 bg-white p-4 shadow-2xl hover:shadow-xl transition-shadow"
+                            className="rounded-[30px] border border-teal-100 bg-white p-4 shadow-2xl hover:shadow-xl transition-shadow"
                         >
                             <div className="flex items-center justify-between mb-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs bg-[#20B5E8]/10 text-[#20B5E8] px-2.5 py-1 rounded-full font-medium">
+                                    <span className="text-xs bg-[#009788]/10 text-[#009788] px-2.5 py-1 rounded-full font-medium">
                                         {u.niu}
                                     </span>
                                     <span
@@ -161,7 +161,7 @@ export default function Index() {
                                     <div className="flex gap-1">
                                         <button
                                             onClick={() => openEdit(u)}
-                                            className="bg-slate-100 px-2.5 py-1 rounded-lg text-xs hover:bg-[#3D7ABA]/10 hover:text-[#3D7ABA] transition"
+                                            className="bg-slate-100 px-2.5 py-1 rounded-lg text-xs hover:bg-[#009788]/10 hover:text-[#009788] transition"
                                         >
                                             Edit
                                         </button>
@@ -196,7 +196,7 @@ export default function Index() {
                                                 onClick={() =>
                                                     salin(u.nip_nuptk)
                                                 }
-                                                className="text-slate-400 hover:text-[#3D7ABA]"
+                                                className="text-slate-400 hover:text-[#009788]"
                                                 aria-label="Salin NIP/NUPTK"
                                             >
                                                 <i className="fa-solid fa-copy text-[10px]"></i>
@@ -215,7 +215,7 @@ export default function Index() {
                                             </span>
                                             <button
                                                 onClick={() => salin(u.nik)}
-                                                className="text-slate-400 hover:text-[#3D7ABA]"
+                                                className="text-slate-400 hover:text-[#009788]"
                                                 aria-label="Salin NIK"
                                             >
                                                 <i className="fa-solid fa-copy text-[10px]"></i>
@@ -264,7 +264,7 @@ export default function Index() {
                                                 onClick={() =>
                                                     salin(u.nomor_hp)
                                                 }
-                                                className="text-slate-400 hover:text-[#3D7ABA]"
+                                                className="text-slate-400 hover:text-[#009788]"
                                                 aria-label="Salin nomor HP"
                                             >
                                                 <i className="fa-solid fa-copy text-[10px]"></i>
@@ -284,9 +284,9 @@ export default function Index() {
                                 className="fixed inset-0 bg-black/50"
                                 onClick={closeModal}
                             ></div>
-                            <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm md:max-w-2xl p-6 border border-sky-100 my-4">
+                            <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm md:max-w-2xl p-6 border border-teal-100 my-4">
                                 <h3 className="font-semibold text-lg mb-4">
-                                    {editData ? "Edit" : "Tambah"} Ustadz
+                                    {editData ? "Edit" : "Tambah"} Guru
                                 </h3>
                                 <form
                                     onSubmit={submit}
@@ -515,7 +515,7 @@ export default function Index() {
                                         <button
                                             type="submit"
                                             disabled={processing}
-                                            className="flex-1 bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-sm font-semibold shadow-lg transition disabled:opacity-50"
+                                            className="flex-1 bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-sm font-semibold shadow-lg transition disabled:opacity-50"
                                         >
                                             {editData ? "Update" : "Simpan"}
                                         </button>

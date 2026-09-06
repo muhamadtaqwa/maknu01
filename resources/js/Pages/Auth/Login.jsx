@@ -19,11 +19,11 @@ export default function Login() {
     return (
         <div className="relative min-h-screen overflow-hidden bg-[#EEF8FD] flex items-center justify-center p-6 md:p-0">
             <div
-                className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#3D7ABA]/20 blur-3xl"
+                className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-[#009788]/20 blur-3xl"
                 aria-hidden="true"
             ></div>
             <div
-                className="absolute -bottom-40 -right-40 h-[420px] w-[420px] rounded-full bg-[#20B5E8]/20 blur-3xl"
+                className="absolute -bottom-40 -right-40 h-[420px] w-[420px] rounded-full bg-[#009788]/20 blur-3xl"
                 aria-hidden="true"
             ></div>
 
@@ -31,38 +31,37 @@ export default function Login() {
                 <div className="grid md:grid-cols-2 md:gap-0 items-center">
                     <div className="hidden md:flex flex-col items-center justify-center p-10 text-center">
                         <img
-                            src="/images/logo-alamanah.png"
-                            alt="Logo Al Amanah"
-                            className="w-64 mb-6"
+                            src="/images/icon.svg"
+                            alt="Logo Sekolah"
+                            className="w-40 mb-4"
                         />
                         <h1 className="text-3xl font-bold text-slate-800">
-                            Al-Amanah Mobile
+                            MAK NU 01 Kota Semarang
                         </h1>
                         <p className="mt-2 text-slate-500">
-                            Sistem Informasi Pondok Pesantren
+                            Sistem Informasi Sekolah
                         </p>
                         <p className="mt-6 text-xs text-slate-400">
-                            © {new Date().getFullYear()} Pondok Pesantren
-                            Al-Amanah
+                            © {new Date().getFullYear()} MAK NU 01 Kota Semarang
                         </p>
                     </div>
 
                     <div className="w-full max-w-md mx-auto md:mx-0 md:ml-auto">
                         <div className="mb-8 text-center md:hidden">
                             <img
-                                src="/images/logo-alamanah.png"
-                                alt="Logo Al Amanah"
-                                className="mx-auto w-56"
+                                src="/images/icon.svg"
+                                alt="Logo MAK NU 01 Kota Semarang"
+                                className="mx-auto w-32"
                             />
                             <h1 className="mt-4 text-2xl font-bold text-slate-800">
-                                Al-Amanah Mobile
+                                MAK NU 01 Kota Semarang
                             </h1>
                             <p className="mt-2 text-slate-500 text-sm">
-                                Sistem Informasi Pondok Pesantren
+                                Sistem Informasi Sekolah
                             </p>
                         </div>
 
-                        <div className="rounded-[30px] border border-sky-100 bg-white p-8 shadow-2xl">
+                        <div className="rounded-[30px] border border-teal-100 bg-white p-8 shadow-2xl">
                             <h2 className="mb-6 text-center text-2xl font-bold text-slate-700">
                                 Selamat Datang
                             </h2>
@@ -100,7 +99,7 @@ export default function Login() {
                                         }
                                         disabled={processing}
                                         placeholder="Masukkan Username"
-                                        className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 outline-none transition focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-70"
+                                        className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 outline-none transition focus:border-[#009788] focus:ring-4 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-70"
                                     />
                                     {errors.username && (
                                         <p className="mt-1.5 text-sm text-red-600">
@@ -135,7 +134,7 @@ export default function Login() {
                                             }
                                             disabled={processing}
                                             placeholder="Masukkan Password"
-                                            className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 pr-14 outline-none transition focus:border-[#20B5E8] focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-70"
+                                            className="w-full rounded-2xl border border-slate-200 bg-white px-5 py-3 pr-14 outline-none transition focus:border-[#009788] focus:ring-4 focus:ring-teal-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-70"
                                         />
                                         <button
                                             type="button"
@@ -148,7 +147,7 @@ export default function Login() {
                                                     ? "Sembunyikan password"
                                                     : "Tampilkan password"
                                             }
-                                            className="absolute right-5 top-1/2 -translate-y-1/2 text-[#3D7ABA] hover:text-[#20B5E8]"
+                                            className="absolute right-5 top-1/2 -translate-y-1/2 text-[#009788] hover:text-[#007a6e]"
                                         >
                                             {showPassword ? (
                                                 <EyeOff size={20} />
@@ -168,7 +167,7 @@ export default function Login() {
                                     <button
                                         type="button"
                                         onClick={() => setShowLupa(true)}
-                                        className="rounded text-sm text-[#3D7ABA] hover:underline focus:outline-none focus:ring-2 focus:ring-sky-200"
+                                        className="rounded text-sm text-[#009788] hover:underline focus:outline-none focus:ring-2 focus:ring-teal-200"
                                     >
                                         Lupa Password?
                                     </button>
@@ -177,7 +176,7 @@ export default function Login() {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="w-full rounded-2xl bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] py-3 font-semibold text-white shadow-lg transition duration-300 hover:scale-[1.02] hover:shadow-xl disabled:pointer-events-none disabled:opacity-50"
+                                    className="w-full rounded-2xl bg-gradient-to-r from-[#009788] to-[#00b5a5] py-3 font-semibold text-white shadow-lg transition duration-300 hover:scale-[1.02] hover:shadow-xl disabled:pointer-events-none disabled:opacity-50"
                                 >
                                     {processing ? "Sedang Login..." : "Login"}
                                 </button>
@@ -185,8 +184,7 @@ export default function Login() {
                         </div>
 
                         <p className="mt-6 text-center text-sm text-slate-500 md:hidden">
-                            © {new Date().getFullYear()} Pondok Pesantren
-                            Al-Amanah
+                            © {new Date().getFullYear()} MAK NU 01 Kota Semarang
                         </p>
                     </div>
                 </div>
@@ -200,19 +198,19 @@ export default function Login() {
                         onClick={() => setShowLupa(false)}
                         aria-hidden="true"
                     ></div>
-                    <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-8 border border-sky-100 text-center">
+                    <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-8 border border-teal-100 text-center">
                         <h3 className="font-semibold text-lg">
                             Lupa Password?
                         </h3>
                         <p className="text-sm text-slate-500 mt-2">
-                            Hubungi Admin Pondok
+                            Hubungi Admin Sekolah
                         </p>
-                        <p className="text-xl font-bold text-[#3D7ABA] mt-2">
+                        <p className="text-xl font-bold text-[#009788] mt-2">
                             08985949733
                         </p>
                         <button
                             onClick={() => setShowLupa(false)}
-                            className="mt-6 w-full bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] text-white py-2.5 rounded-2xl text-sm font-semibold shadow-lg hover:scale-[1.02] transition"
+                            className="mt-6 w-full bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2.5 rounded-2xl text-sm font-semibold shadow-lg hover:scale-[1.02] transition"
                         >
                             Tutup
                         </button>

@@ -106,13 +106,13 @@ export default function AppLayout({ children }) {
             label: "Jadwal Sholat",
             path: "/jadwal-sholat",
             icon: CloudSun,
-            roles: ["admin", "ustadz", "santri"],
+            roles: [],
         },
         {
             label: "Al-Qur'an",
             path: "/al-quran",
             icon: BookOpenText,
-            roles: ["admin", "ustadz", "santri"],
+            roles: [],
         },
         {
             label: "QR Code",
@@ -130,24 +130,24 @@ export default function AppLayout({ children }) {
 
     const menuData = [
         {
-            label: "Santri",
+            label: "Siswa",
             path: "/santri",
             icon: GraduationCap,
             roles: ["admin"],
         },
-        { label: "Ustadz", path: "/ustadz", icon: Users, roles: ["admin"] },
+        { label: "Guru", path: "/ustadz", icon: Users, roles: ["admin"] },
         {
             label: "PSB",
             path: "/psb/verifikasi",
             icon: FileSignature,
-            roles: ["admin"],
+            roles: [],
         },
-        { label: "Surat", path: "/surat", icon: Mail, roles: ["admin"] },
+        { label: "Surat", path: "/surat", icon: Mail, roles: [] },
         {
             label: "Export EMIS",
             path: "/export",
             icon: FileDown,
-            roles: ["admin"],
+            roles: [],
         },
     ];
 
@@ -163,13 +163,13 @@ export default function AppLayout({ children }) {
             label: "Tagihan",
             path: "/tagihan",
             icon: FileText,
-            roles: ["santri"],
+            roles: [],
         },
         {
             label: "Cashflow",
             path: "/cashflow",
             icon: TrendingUp,
-            roles: ["admin"],
+            roles: [],
         },
     ];
 
@@ -178,16 +178,16 @@ export default function AppLayout({ children }) {
             label: "Program Tahfidz",
             path: "/tahfidz",
             icon: BookMarked,
-            roles: ["admin", "ustadz", "santri"],
+            roles: [],
         },
         {
-            label: "Presensi Ustadz",
+            label: "Presensi Guru",
             path: "/presensi",
             icon: ClipboardList,
             roles: ["admin", "ustadz"],
         },
         {
-            label: "Presensi Santri",
+            label: "Presensi Siswa",
             path: "/presensi-santri",
             icon: ClipboardCheck,
             roles: ["admin", "ustadz"],
@@ -196,13 +196,13 @@ export default function AppLayout({ children }) {
             label: "Pinjam Gedung",
             path: "/pinjam-gedung",
             icon: Building,
-            roles: ["admin"],
+            roles: [],
         },
         {
             label: "Inventaris",
             path: "/inventaris",
             icon: Box,
-            roles: ["admin"],
+            roles: [],
         },
     ];
 
@@ -247,7 +247,7 @@ export default function AppLayout({ children }) {
             { label: "Beranda", path: "/", icon: Home },
             { label: "Timeline", path: "/timeline", icon: CalendarDays },
             { label: "QR", path: "/qr", icon: QrCode, isCenter: true },
-            { label: "Tagihan", path: "/tagihan", icon: FileText },
+            { label: "Presensi", path: "/presensi", icon: ClipboardList },
             { label: "Profil", path: "/profil", icon: User },
         ],
     };
@@ -259,15 +259,15 @@ export default function AppLayout({ children }) {
         router.post("/logout");
     };
     const isActive = (path) => currentPath === path;
-    const activeClass = "bg-[#3D7ABA]/10 text-[#3D7ABA] font-semibold";
-    const inactiveClass = "text-slate-600 hover:bg-[#3D7ABA]/5";
+    const activeClass = "bg-[#009788]/10 text-[#009788] font-semibold";
+    const inactiveClass = "text-slate-600 hover:bg-[#009788]/5";
 
     return (
         <div className="min-h-screen bg-[#EEF8FD]">
             <Toaster position="top-right" />
 
             {/* Header Mobile */}
-            <header className="bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] sticky top-0 z-30 shadow-lg md:hidden">
+            <header className="bg-gradient-to-r from-[#009788] to-[#00b5a5] sticky top-0 z-30 shadow-lg md:hidden">
                 <div className="flex flex-col items-center py-2 relative">
                     <button
                         onClick={() => setSidebarOpen(true)}
@@ -277,12 +277,12 @@ export default function AppLayout({ children }) {
                         <Menu className="w-5 h-5" />
                     </button>
                     <img
-                        src="/images/logo-alamanah.png"
+                        src="/images/icon.svg"
                         alt="Logo"
                         className="h-10 w-auto"
                     />
                     <span className="text-[11px] font-semibold text-white/90 mt-0.5 tracking-wide">
-                        Al-Amanah Mobile
+                        MAK NU 01 Kota Semarang
                     </span>
                 </div>
             </header>
@@ -300,7 +300,7 @@ export default function AppLayout({ children }) {
                 >
                     <div className="p-4 flex items-center gap-3 shrink-0">
                         <img
-                            src="/images/logo-alamanah.png"
+                            src="/images/icon.svg"
                             alt="Logo"
                             className="h-8 w-auto"
                         />
@@ -406,18 +406,14 @@ export default function AppLayout({ children }) {
             >
                 <div className="p-4 flex items-center justify-center shrink-0">
                     <img
-                        src={
-                            sidebarCollapsed
-                                ? "/images/icon-amanah.png"
-                                : "/images/logo-alamanah.png"
-                        }
+                        src="/images/icon.svg"
                         alt="Logo"
                         className="h-7 w-auto"
                     />
                 </div>
                 <button
                     onClick={toggleSidebar}
-                    className="absolute -right-3 top-16 w-6 h-6 bg-white shadow-md rounded-full flex items-center justify-center text-xs text-slate-400 hover:text-[#3D7ABA]"
+                    className="absolute -right-3 top-16 w-6 h-6 bg-white shadow-md rounded-full flex items-center justify-center text-xs text-slate-400 hover:text-[#009788]"
                     aria-label="Toggle sidebar"
                 >
                     {sidebarCollapsed ? (
@@ -538,12 +534,12 @@ export default function AppLayout({ children }) {
                                     className="flex flex-col items-center -mt-7 relative z-10"
                                 >
                                     <div
-                                        className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 border-white transition-all ${isActive(b.path) ? "bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8] scale-110" : "bg-gradient-to-r from-[#3D7ABA] to-[#20B5E8]"}`}
+                                        className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 border-white transition-all ${isActive(b.path) ? "bg-gradient-to-r from-[#009788] to-[#00b5a5] scale-110" : "bg-gradient-to-r from-[#009788] to-[#00b5a5]"}`}
                                     >
                                         <b.icon className="w-6 h-6 text-white" />
                                     </div>
                                     <span
-                                        className={`text-[10px] font-bold mt-0.5 ${isActive(b.path) ? "text-[#3D7ABA]" : "text-slate-400"}`}
+                                        className={`text-[10px] font-bold mt-0.5 ${isActive(b.path) ? "text-[#009788]" : "text-slate-400"}`}
                                     >
                                         {b.label}
                                     </span>
@@ -552,10 +548,10 @@ export default function AppLayout({ children }) {
                                 <Link
                                     key={b.path}
                                     href={b.path}
-                                    className={`flex flex-col items-center py-1.5 px-1 min-w-[52px] transition-all ${isActive(b.path) ? "text-[#3D7ABA] scale-110" : "text-slate-400 hover:text-[#20B5E8]"}`}
+                                    className={`flex flex-col items-center py-1.5 px-1 min-w-[52px] transition-all ${isActive(b.path) ? "text-[#009788] scale-110" : "text-slate-400 hover:text-[#00b5a5]"}`}
                                 >
                                     <div
-                                        className={`p-1.5 rounded-full transition-all ${isActive(b.path) ? "bg-[#3D7ABA]/10" : ""}`}
+                                        className={`p-1.5 rounded-full transition-all ${isActive(b.path) ? "bg-[#009788]/10" : ""}`}
                                     >
                                         <b.icon className="w-5 h-5" />
                                     </div>

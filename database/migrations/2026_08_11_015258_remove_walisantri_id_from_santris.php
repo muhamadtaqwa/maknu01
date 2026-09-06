@@ -9,15 +9,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('santris', function (Blueprint $table) {
-            $table->dropForeign(['walisantri_id']);
-            $table->dropColumn('walisantri_id');
+            // Cek dulu apakah kolom ada sebelum drop
+            if (Schema::hasColumn('santris', 'walisantri_id')) {
+                $table->dropColumn('walisantri_id');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('santris', function (Blueprint $table) {
-            $table->foreignId('walisantri_id')->nullable()->constrained('walisantris')->onDelete('cascade');
+            $table->foreignId('walisantri_id')->nullable()->after('user_id');
         });
     }
 };
