@@ -50,22 +50,52 @@ class PresensiGuruController extends Controller
                 ->values();
         }
 
-        if ($mode === 'bulanan') {
-            $presensiBulanan = PresensiGuru::with('guru')
-                ->whereMonth('tanggal', $bulan)
-                ->whereYear('tanggal', $tahun)
+        if ($mode === 'mingguan') {
+            $startOfWeek = now()->startOfWeek()->format('Y-m-d');
+            $endOfWeek = now()->endOfWeek()->format('Y-m-d');
+
+            $presensiMingguan = PresensiGuru::with('guru')
+                ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
+                ->whereNotNull('jam_masuk')
+                ->whereNotNull('jam_pulang')
                 ->get()
                 ->groupBy('guru_id');
 
-            $rekap = $semuaGuru->map(function ($g) use ($presensiBulanan) {
-                $items = $presensiBulanan->get($g->id, collect());
+            $totalHariEfektif = 7;
+
+            $rekap = $semuaGuru->map(function ($g) use ($presensiMingguan, $totalHariEfektif) {
+                $items = $presensiMingguan->get($g->id, collect());
                 $hadir = $items->count();
-                $tidak = 0;
+                $tidak = $totalHariEfektif - $hadir;
                 return [
                     'guru_id' => $g->id,
                     'nama' => $g->nama_lengkap,
                     'total_hadir' => $hadir,
-                    'total_tidak' => $tidak,
+                    'total_tidak' => max(0, $tidak),
+                ];
+            })->sortBy('nama')->values();
+        }
+
+        if ($mode === 'bulanan') {
+            $totalHari = now()->daysInMonth;
+
+            $presensiBulanan = PresensiGuru::with('guru')
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun)
+                ->whereNotNull('jam_masuk')
+                ->whereNotNull('jam_pulang')
+                ->get()
+                ->groupBy('guru_id');
+
+            $rekap = $semuaGuru->map(function ($g) use ($presensiBulanan, $totalHari) {
+                $items = $presensiBulanan->get($g->id, collect());
+                $hadir = $items->count();
+                $tidak = $totalHari - $hadir;
+                return [
+                    'guru_id' => $g->id,
+                    'nama' => $g->nama_lengkap,
+                    'total_hadir' => $hadir,
+                    'total_tidak' => max(0, $tidak),
                 ];
             })->sortBy('nama')->values();
         }

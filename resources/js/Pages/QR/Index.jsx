@@ -13,7 +13,7 @@ export default function Index() {
     const [mode, setMode] = useState("camera");
     const [manualInput, setManualInput] = useState("");
     const [sending, setSending] = useState(false);
-    const [target, setTarget] = useState("siswa"); // "siswa" atau "guru"
+    const [target, setTarget] = useState("siswa");
     const scannerRef = useRef(null);
     const inputRef = useRef(null);
     const qrRef = useRef(null);
@@ -197,13 +197,13 @@ export default function Index() {
                         <div className="flex gap-2 mb-4 bg-slate-100 rounded-full p-1">
                             <button
                                 onClick={() => setTarget("siswa")}
-                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${target === "siswa" ? "bg-white shadow text-[#009788]" : "text-slate-500"}`}
+                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${target === "siswa" ? "bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow" : "text-slate-500"}`}
                             >
                                 Siswa
                             </button>
                             <button
                                 onClick={() => setTarget("guru")}
-                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${target === "guru" ? "bg-white shadow text-[#009788]" : "text-slate-500"}`}
+                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${target === "guru" ? "bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow" : "text-slate-500"}`}
                             >
                                 Guru
                             </button>
@@ -226,7 +226,7 @@ export default function Index() {
                                 }}
                                 className={`flex-1 py-2 rounded-full text-xs font-medium transition ${mode === "manual" ? "bg-white shadow text-[#009788]" : "text-slate-500"}`}
                             >
-                                Input Manual
+                                Manual
                             </button>
                         </div>
 

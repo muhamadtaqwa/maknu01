@@ -118,43 +118,6 @@ export default function Siswa() {
                     Presensi Siswa
                 </h2>
 
-                {/* Input manual NIS - hanya admin & harian */}
-                {isAdmin && activeMode === "harian" && (
-                    <div className="rounded-[30px] border border-teal-100 bg-white p-4 shadow-2xl mb-4">
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                placeholder="Masukkan NIS siswa"
-                                value={nis}
-                                onChange={(e) =>
-                                    setNis(e.target.value.toUpperCase())
-                                }
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter" && nis) {
-                                        e.preventDefault();
-                                        handleScan(nis);
-                                    }
-                                }}
-                                className="flex-1 border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
-                                autoFocus
-                            />
-                            <button
-                                onClick={() => handleScan(nis)}
-                                disabled={!nis || sending}
-                                className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-5 py-2.5 rounded-2xl text-sm font-semibold shadow-lg disabled:opacity-50"
-                            >
-                                Simpan
-                            </button>
-                        </div>
-
-                        {sending && (
-                            <p className="text-xs text-slate-400 mt-2">
-                                Menyimpan...
-                            </p>
-                        )}
-                    </div>
-                )}
-
                 {/* Tab Mode */}
                 <div className="grid grid-cols-3 gap-2 mb-3">
                     {["harian", "mingguan", "bulanan"].map((m) => (
