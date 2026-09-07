@@ -200,10 +200,10 @@ export default function Dashboard() {
                         <div className="grid grid-cols-2 gap-2">
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    Nama
+                                    Username
                                 </p>
                                 <p className="mt-1 text-lg font-bold text-[#009788]">
-                                    {user.guru?.nama_lengkap}
+                                    {user.username}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
