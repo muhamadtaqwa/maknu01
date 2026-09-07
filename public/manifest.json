@@ -1,23 +1,23 @@
 {
-    "name": "Al-Amanah Mobile",
-    "short_name": "Al-Amanah Mobile",
-    "description": "Sistem Informasi Pondok Pesantren Al-Amanah",
+    "name": "MAK NU 01 Kota Semarang",
+    "short_name": "MAK NU 01",
+    "description": "Sistem Informasi MAK NU 01 Kota Semarang",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#EEF8FD",
-    "theme_color": "#3D7ABA",
+    "theme_color": "#009788",
     "icons": [
         {
-            "src": "/icon-amanah.png",
+            "src": "/images/icon.svg",
             "sizes": "192x192",
-            "type": "image/png",
+            "type": "image/svg+xml",
             "purpose": "any"
         },
         {
-            "src": "/icon-amanah.png",
+            "src": "/images/icon.svg",
             "sizes": "512x512",
-            "type": "image/png",
+            "type": "image/svg+xml",
             "purpose": "any"
         }
     ]
