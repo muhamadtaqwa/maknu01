@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
-    const { auth, stats, aktivitas, presensiSantri, grafikPresensi } =
+    const { auth, stats, aktivitas, presensiSiswa, grafikPresensi } =
         usePage().props;
     const user = auth.user;
     const [time, setTime] = useState(new Date());
@@ -85,32 +85,32 @@ export default function Dashboard() {
                                 <p className="text-[11px] text-slate-400">
                                     Total Siswa
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.totalSantri || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.totalSiswa || 0}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Total Guru
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.totalUstadz || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.totalGuru || 0}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Siswa Putra
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.santriPutra || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.siswaPutra || 0}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Siswa Putri
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.santriPutri || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.siswaPutri || 0}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
@@ -180,7 +180,7 @@ export default function Dashboard() {
                                             className="flex items-center justify-between text-xs text-slate-600"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-[#16605e] shrink-0"></div>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-[#009788] shrink-0"></div>
                                                 {item.teks}
                                             </div>
                                             <span className="text-slate-400 text-[10px] shrink-0 ml-2">
@@ -194,16 +194,16 @@ export default function Dashboard() {
                 )}
 
                 {/* ========== GURU ========== */}
-                {user.role === "ustadz" && (
+                {user.role === "guru" && (
                     <>
                         {/* Info pribadi */}
                         <div className="grid grid-cols-2 gap-2">
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
-                                    NIG
+                                    Nama
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {user.guru?.niu}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {user.guru?.nama_lengkap}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
@@ -225,32 +225,32 @@ export default function Dashboard() {
                                 <p className="text-[11px] text-slate-400">
                                     Total Siswa
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.totalSantri || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.totalSiswa || 0}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Total Guru
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.totalUstadz || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.totalGuru || 0}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Siswa Putra
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.santriPutra || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.siswaPutra || 0}
                                 </p>
                             </div>
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     Siswa Putri
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
-                                    {stats?.santriPutri || 0}
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
+                                    {stats?.siswaPutri || 0}
                                 </p>
                             </div>
                         </div>
@@ -293,13 +293,13 @@ export default function Dashboard() {
                             </h2>
                             <div className="grid grid-cols-2 gap-2">
                                 <a
-                                    href="/presensi"
-                                    className="rounded-xl bg-[#16605e]/10 p-3 text-center text-xs font-medium text-[#16605e]"
+                                    href="/presensi-guru"
+                                    className="rounded-xl bg-[#009788]/10 p-3 text-center text-xs font-medium text-[#009788]"
                                 >
                                     Presensi Guru
                                 </a>
                                 <a
-                                    href="/presensi-santri"
+                                    href="/presensi-siswa"
                                     className="rounded-xl bg-emerald-50 p-3 text-center text-xs font-medium text-emerald-600"
                                 >
                                     Presensi Siswa
@@ -312,7 +312,7 @@ export default function Dashboard() {
                                 </a>
                                 <a
                                     href="/qr"
-                                    className="rounded-xl bg-[#16605e]/10 p-3 text-center text-xs font-medium text-[#16605e]"
+                                    className="rounded-xl bg-[#009788]/10 p-3 text-center text-xs font-medium text-[#009788]"
                                 >
                                     QR Code
                                 </a>
@@ -322,14 +322,14 @@ export default function Dashboard() {
                 )}
 
                 {/* ========== SISWA ========== */}
-                {user.role === "santri" && (
+                {user.role === "siswa" && (
                     <>
                         <div className="grid grid-cols-2 gap-2">
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
                                     NIS
                                 </p>
-                                <p className="mt-1 text-lg font-bold text-[#16605e]">
+                                <p className="mt-1 text-lg font-bold text-[#009788]">
                                     {user.siswa?.nis}
                                 </p>
                             </div>
@@ -351,7 +351,7 @@ export default function Dashboard() {
                             <h2 className="text-sm font-bold text-slate-700 mb-3">
                                 Presensi Bulan Ini
                             </h2>
-                            <CalendarPresensi data={presensiSantri || []} />
+                            <CalendarPresensi data={presensiSiswa || []} />
                         </div>
 
                         <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
@@ -360,12 +360,6 @@ export default function Dashboard() {
                             </h2>
                             <div className="grid grid-cols-2 gap-2">
                                 <a
-                                    href="/tagihan"
-                                    className="rounded-xl bg-red-50 p-3 text-center text-xs font-medium text-red-500"
-                                >
-                                    Tagihan
-                                </a>
-                                <a
                                     href="/timeline"
                                     className="rounded-xl bg-blue-50 p-3 text-center text-xs font-medium text-blue-500"
                                 >
@@ -373,7 +367,7 @@ export default function Dashboard() {
                                 </a>
                                 <a
                                     href="/qr"
-                                    className="rounded-xl bg-[#16605e]/10 p-3 text-center text-xs font-medium text-[#16605e]"
+                                    className="rounded-xl bg-[#009788]/10 p-3 text-center text-xs font-medium text-[#009788]"
                                 >
                                     QR Code
                                 </a>

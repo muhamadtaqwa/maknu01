@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Santri;
-use App\Models\Ustadz;
+use App\Models\Siswa;
+use App\Models\Guru;
 use App\Models\User;
 use App\Models\Pembayaran;
 use App\Models\Login;
-use App\Models\Psb;
-use App\Models\PresensiSantri;
+use App\Models\PresensiSiswa;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -29,10 +28,10 @@ class DashboardController extends Controller
 
         $aktivitas = $this->getAktivitas();
 
-        $presensiSantri = [];
-        if (auth()->user()->role === 'santri') {
-            $nis = auth()->user()->santri->nis;
-            $presensiSantri = PresensiSantri::where('nis', $nis)
+        $presensiSiswa = [];
+        if (auth()->user()->role === 'siswa') {
+            $nis = auth()->user()->siswa->nis;
+            $presensiSiswa = PresensiSiswa::where('nis', $nis)
                 ->whereMonth('tanggal', $bulanIni)
                 ->whereYear('tanggal', $tahunIni)
                 ->pluck('tanggal')
@@ -40,12 +39,12 @@ class DashboardController extends Controller
         }
 
         $grafikPresensi = [];
-        if (auth()->user()->role === 'ustadz') {
+        if (auth()->user()->role === 'guru') {
             $startOfWeek = now()->startOfWeek();
             $endOfWeek = now()->endOfWeek();
-            $totalSantriAktif = Santri::where('status', 'aktif')->count();
+            $totalSiswaAktif = Siswa::where('status', 'aktif')->count();
 
-            $presensiMingguan = PresensiSantri::whereBetween('tanggal', [
+            $presensiMingguan = PresensiSiswa::whereBetween('tanggal', [
                 $startOfWeek->format('Y-m-d'),
                 $endOfWeek->format('Y-m-d'),
             ])->get();
@@ -55,7 +54,7 @@ class DashboardController extends Controller
                 $hadir = $presensiMingguan
                     ->where('tanggal', $tanggal->format('Y-m-d'))
                     ->count();
-                $tidak = max(0, $totalSantriAktif - $hadir);
+                $tidak = max(0, $totalSiswaAktif - $hadir);
                 $grafikPresensi[] = [
                     'hari' => $tanggal->locale('id')->dayName,
                     'hadir' => $hadir,
@@ -66,22 +65,22 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'stats' => [
-                'totalSantri'       => Santri::where('status', 'aktif')->count(),
-                'santriPutra'       => Santri::where('status', 'aktif')->where('jenis_kelamin', 'laki-laki')->count(),
-                'santriPutri'       => Santri::where('status', 'aktif')->where('jenis_kelamin', 'perempuan')->count(),
-                'totalUstadz'       => Ustadz::count(),
-                'totalBelumBayar'   => $totalBelumBayar,
-                'totalSudahBayar'   => $totalSudahBayar,
-                'userAktif'         => DB::table('sessions')
+                'totalSiswa'       => Siswa::where('status', 'aktif')->count(),
+                'siswaPutra'       => Siswa::where('status', 'aktif')->where('jenis_kelamin', 'laki-laki')->count(),
+                'siswaPutri'       => Siswa::where('status', 'aktif')->where('jenis_kelamin', 'perempuan')->count(),
+                'totalGuru'        => Guru::count(),
+                'totalBelumBayar'  => $totalBelumBayar,
+                'totalSudahBayar'  => $totalSudahBayar,
+                'userAktif'        => DB::table('sessions')
                     ->whereNotNull('user_id')
                     ->where('last_activity', '>=', now()->subMinutes(5)->timestamp)
                     ->count(),
-                'totalUser'         => User::count(),
-                'kunjunganHariIni'  => Login::whereDate('created_at', today())->count(),
-                'totalKunjungan'    => Login::count(),
+                'totalUser'        => User::count(),
+                'kunjunganHariIni' => Login::whereDate('created_at', today())->count(),
+                'totalKunjungan'   => Login::count(),
             ],
             'aktivitas' => $aktivitas,
-            'presensiSantri' => $presensiSantri,
+            'presensiSiswa' => $presensiSiswa,
             'grafikPresensi' => $grafikPresensi,
         ]);
     }
@@ -90,31 +89,23 @@ class DashboardController extends Controller
     {
         $data = collect();
 
-        $pembayaran = Pembayaran::with('santri')->latest()->take(10)->get();
+        $pembayaran = Pembayaran::with('siswa')->latest()->take(10)->get();
         foreach ($pembayaran as $p) {
-            $nama = $p->santri->nama_lengkap ?? 'Seseorang';
+            $nama = $p->siswa->nama_lengkap ?? 'Seseorang';
             $data->push([
                 'teks' => $nama . ' membayar ' . $p->jenis,
                 'waktu' => $p->created_at,
             ]);
         }
 
-        $psb = Psb::latest()->take(10)->get();
-        foreach ($psb as $p) {
-            $data->push([
-                'teks' => $p->nama_lengkap . ' mendaftar PSB',
-                'waktu' => $p->created_at,
-            ]);
-        }
-
-        $logins = Login::with('user.ustadz', 'user.santri')->latest()->take(10)->get();
+        $logins = Login::with('user.guru', 'user.siswa')->latest()->take(10)->get();
         foreach ($logins as $l) {
             $nama = 'Seseorang';
             if ($l->user) {
                 if ($l->user->role === 'admin') {
                     $nama = 'Admin Sekolah';
                 } else {
-                    $nama = $l->user->ustadz->nama_lengkap ?? $l->user->santri->nama_lengkap ?? $l->user->username;
+                    $nama = $l->user->guru->nama_lengkap ?? $l->user->siswa->nama_lengkap ?? $l->user->username;
                 }
             }
             $data->push([

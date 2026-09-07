@@ -22,9 +22,9 @@ class Pembayaran extends Model
 
     protected $appends = ['total_dibayar', 'sisa', 'status'];
 
-    public function santri()
+    public function siswa()
     {
-        return $this->belongsTo(Santri::class, 'nis', 'nis');
+        return $this->belongsTo(Siswa::class, 'nis', 'nis');
     }
 
     public function details()

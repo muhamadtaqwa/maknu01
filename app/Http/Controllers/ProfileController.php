@@ -11,7 +11,7 @@ class ProfileController extends Controller
 {
     public function edit()
     {
-        $user = auth()->user()->load('ustadz', 'santri');
+        $user = auth()->user()->load('guru', 'siswa');
         return Inertia::render('Profil/Index', ['user' => $user]);
     }
 
@@ -19,10 +19,9 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->role === 'ustadz') {
+        if ($user->role === 'guru') {
             $request->validate([
                 'nama_lengkap' => 'required',
-                'nip_nuptk' => 'nullable',
                 'nik' => 'nullable',
                 'tempat_lahir' => 'nullable',
                 'tanggal_lahir' => 'nullable|date',
@@ -33,9 +32,8 @@ class ProfileController extends Controller
                 'password' => 'nullable|min:6',
             ]);
 
-            $user->ustadz->update($request->only([
+            $user->guru->update($request->only([
                 'nama_lengkap',
-                'nip_nuptk',
                 'nik',
                 'tempat_lahir',
                 'tanggal_lahir',
@@ -44,7 +42,7 @@ class ProfileController extends Controller
                 'alamat',
                 'nomor_hp',
             ]));
-        } elseif ($user->role === 'santri') {
+        } elseif ($user->role === 'siswa') {
             $request->validate([
                 'nama_lengkap' => 'required',
                 'nik' => 'nullable',
@@ -58,7 +56,6 @@ class ProfileController extends Controller
                 'provinsi' => 'nullable',
                 'program_studi' => 'nullable',
                 'angkatan' => 'nullable',
-                'kamar' => 'nullable',
                 'nomor_hp' => 'nullable',
                 'nama_ayah' => 'nullable',
                 'nik_ayah' => 'nullable',
@@ -70,7 +67,7 @@ class ProfileController extends Controller
                 'password' => 'nullable|min:6',
             ]);
 
-            $user->santri->update($request->only([
+            $user->siswa->update($request->only([
                 'nama_lengkap',
                 'nik',
                 'tempat_lahir',
@@ -83,7 +80,6 @@ class ProfileController extends Controller
                 'provinsi',
                 'program_studi',
                 'angkatan',
-                'kamar',
                 'nomor_hp',
                 'nama_ayah',
                 'nik_ayah',
@@ -113,36 +109,5 @@ class ProfileController extends Controller
         $user->update(['password' => Hash::make($request->password_baru)]);
 
         return back()->with('success', 'Password berhasil diubah.');
-    }
-
-    public function simpanLokasi(Request $request)
-    {
-        $request->validate([
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-        ]);
-
-        $request->user()->update([
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-        ]);
-
-        return back()->with('success', 'Lokasi tersimpan');
-    }
-
-    public function simpanNotifAdzan(Request $request)
-    {
-        $request->validate([
-            'key' => 'required|in:subuh,dzuhur,ashar,maghrib,isya',
-            'value' => 'required|boolean',
-        ]);
-
-        $field = 'notif_' . $request->key;
-
-        $request->user()->update([
-            $field => $request->value,
-        ]);
-
-        return back()->with('success', 'Preferensi notifikasi tersimpan');
     }
 }

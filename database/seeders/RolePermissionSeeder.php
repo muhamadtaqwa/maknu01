@@ -17,16 +17,9 @@ class RolePermissionSeeder extends Seeder
         $kelolaPresensi = Permission::firstOrCreate(['name' => 'kelola presensi']);
 
         $admin = Role::firstOrCreate(['name' => 'admin']);
-        $admin->syncPermissions([$kelolaSemua]);
+        $admin->syncPermissions([$kelolaSemua, $kelolaPembayaran, $kelolaPresensi]);
 
-        $bendahara = Role::firstOrCreate(['name' => 'bendahara']);
-        $bendahara->syncPermissions([$kelolaPembayaran]);
-
-        $sekretaris = Role::firstOrCreate(['name' => 'sekretaris']);
-        $sekretaris->syncPermissions([$kelolaPresensi]);
-
-        Role::firstOrCreate(['name' => 'ustadz']);
-        Role::firstOrCreate(['name' => 'santri']);
-        Role::firstOrCreate(['name' => 'walisantri']);
+        Role::firstOrCreate(['name' => 'guru']);
+        Role::firstOrCreate(['name' => 'siswa']);
     }
 }

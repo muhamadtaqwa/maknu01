@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pembayaran;
-use App\Models\Santri;
+use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -34,9 +34,9 @@ class RekapController extends Controller
         ]);
     }
 
-    public function santri(Request $request)
+    public function siswa(Request $request)
     {
-        $query = Santri::orderBy('nis');
+        $query = Siswa::orderBy('nis');
 
         // Search
         if ($request->search) {
@@ -47,17 +47,17 @@ class RekapController extends Controller
             });
         }
 
-        $santris = $query->paginate(20)->withQueryString();
+        $siswas = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('Rekap/Santri', [
-            'santris' => $santris,
+        return Inertia::render('Rekap/Siswa', [
+            'siswas' => $siswas,
             'filters' => $request->only('search'),
         ]);
     }
 
-    public function santriDetailJson($nis)
+    public function siswaDetailJson($nis)
     {
-        $santri = Santri::where('nis', $nis)->first();
+        $siswa = Siswa::where('nis', $nis)->first();
         $rekap = Pembayaran::where('nis', $nis)->get()->groupBy('jenis')->map(function ($items) {
             $total = $items->sum('nominal');
             $dibayar = $items->sum('total_dibayar');
@@ -71,7 +71,7 @@ class RekapController extends Controller
             ];
         })->values();
 
-        return response()->json(['santri' => $santri, 'rekap' => $rekap]);
+        return response()->json(['siswa' => $siswa, 'rekap' => $rekap]);
     }
 
     public function spp()
@@ -79,15 +79,15 @@ class RekapController extends Controller
         $data = Pembayaran::where('jenis', 'SPP')->get()
             ->groupBy('nis')
             ->map(function ($items) {
-                $santri = Santri::where('nis', $items->first()->nis)->first();
+                $siswa = Siswa::where('nis', $items->first()->nis)->first();
                 $total = $items->sum('nominal');
                 $dibayar = $items->sum('total_dibayar');
                 $lunas = $items->filter(fn($i) => $i->status === 'lunas');
 
-                $perSpp = $items->map(function ($item) use ($santri) {
+                $perSpp = $items->map(function ($item) {
                     return [
                         'id' => $item->id,
-                        'nama_pembayaran' => str_replace(" - {$santri->nama_lengkap}", '', $item->nama_pembayaran),
+                        'nama_pembayaran' => $item->nama_pembayaran,
                         'nominal' => $item->nominal,
                         'status' => $item->status,
                     ];
@@ -95,7 +95,7 @@ class RekapController extends Controller
 
                 return [
                     'nis' => $items->first()->nis,
-                    'nama' => $santri->nama_lengkap ?? '-',
+                    'nama' => $siswa->nama_lengkap ?? '-',
                     'total_tagihan' => $items->count(),
                     'total_lunas' => $lunas->count(),
                     'total_belum' => $items->count() - $lunas->count(),
@@ -114,124 +114,17 @@ class RekapController extends Controller
         ]);
     }
 
-    public function kitab()
+    public function buku()
     {
-        $data = Pembayaran::where('jenis', 'Kitab')->get()
+        $data = Pembayaran::where('jenis', 'Buku')->get()
             ->groupBy('nis')
             ->map(function ($items) {
-                $santri = Santri::where('nis', $items->first()->nis)->first();
+                $siswa = Siswa::where('nis', $items->first()->nis)->first();
                 $total = $items->sum('nominal');
                 $dibayar = $items->sum('total_dibayar');
                 $lunas = $items->filter(fn($i) => $i->status === 'lunas');
 
-                $perKitab = $items->map(function ($item) use ($santri) {
-                    return [
-                        'id' => $item->id,
-                        'nama_pembayaran' => str_replace(" - {$santri->nama_lengkap}", '', $item->nama_pembayaran),
-                        'nominal' => $item->nominal,
-                        'status' => $item->status,
-                    ];
-                })->values();
-
-                return [
-                    'nis' => $items->first()->nis,
-                    'nama' => $santri->nama_lengkap ?? '-',
-                    'total_tagihan' => $items->count(),
-                    'total_lunas' => $lunas->count(),
-                    'total_belum' => $items->count() - $lunas->count(),
-                    'total_nominal' => $total,
-                    'nominal_lunas' => $dibayar,
-                    'nominal_belum' => $total - $dibayar,
-                    'per_kitab' => $perKitab,
-                ];
-            })->sortBy('nis')->values();
-
-        return Inertia::render('Rekap/Kitab', [
-            'rekap' => $data,
-            'totalSemua' => $data->sum('total_nominal'),
-            'totalLunas' => $data->sum('nominal_lunas'),
-            'totalBelum' => $data->sum('nominal_belum'),
-        ]);
-    }
-
-    public function kas()
-    {
-        $urutanBulan = [
-            'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember',
-        ];
-
-        $data = Pembayaran::where('jenis', 'Kas')->get()
-            ->groupBy('nis')
-            ->map(function ($items) use ($urutanBulan) {
-                $santri = Santri::where('nis', $items->first()->nis)->first();
-                $total = $items->sum('nominal');
-                $dibayar = $items->sum('total_dibayar');
-                $lunas = $items->filter(fn($i) => $i->status === 'lunas');
-
-                $perBulan = $items->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'nama_pembayaran' => $item->nama_pembayaran,
-                        'nominal' => $item->nominal,
-                        'status' => $item->status,
-                        'tgl_bayar' => $item->tgl_bayar,
-                    ];
-                })->sort(function ($a, $b) use ($urutanBulan) {
-                    $bulanA = trim(str_replace(['Kas Bulanan - ', '-', ' '], ['', '', ' '], $a['nama_pembayaran'] ?? ''));
-                    $bulanB = trim(str_replace(['Kas Bulanan - ', '-', ' '], ['', '', ' '], $b['nama_pembayaran'] ?? ''));
-
-                    $indexA = array_search($bulanA, $urutanBulan);
-                    $indexB = array_search($bulanB, $urutanBulan);
-
-                    if ($indexA === false) $indexA = 99;
-                    if ($indexB === false) $indexB = 99;
-
-                    return $indexA - $indexB;
-                })->values();
-
-                return [
-                    'nis' => $items->first()->nis,
-                    'nama' => $santri->nama_lengkap ?? '-',
-                    'total_tagihan' => $items->count(),
-                    'total_lunas' => $lunas->count(),
-                    'total_belum' => $items->count() - $lunas->count(),
-                    'total_nominal' => $total,
-                    'nominal_lunas' => $dibayar,
-                    'nominal_belum' => $total - $dibayar,
-                    'per_bulan' => $perBulan,
-                ];
-            })->sortBy('nis')->values();
-
-        return Inertia::render('Rekap/Kas', [
-            'rekap' => $data,
-            'totalSemua' => $data->sum('total_nominal'),
-            'totalLunas' => $data->sum('nominal_lunas'),
-            'totalBelum' => $data->sum('nominal_belum'),
-        ]);
-    }
-
-    public function anjem()
-    {
-        $data = Pembayaran::where('jenis', 'Anjem')->get()
-            ->groupBy('nis')
-            ->map(function ($items) {
-                $santri = Santri::where('nis', $items->first()->nis)->first();
-                $total = $items->sum('nominal');
-                $dibayar = $items->sum('total_dibayar');
-                $lunas = $items->filter(fn($i) => $i->status === 'lunas');
-
-                $perAnjem = $items->map(function ($item) {
+                $perBuku = $items->map(function ($item) {
                     return [
                         'id' => $item->id,
                         'nama_pembayaran' => $item->nama_pembayaran,
@@ -242,18 +135,18 @@ class RekapController extends Controller
 
                 return [
                     'nis' => $items->first()->nis,
-                    'nama' => $santri->nama_lengkap ?? '-',
+                    'nama' => $siswa->nama_lengkap ?? '-',
                     'total_tagihan' => $items->count(),
                     'total_lunas' => $lunas->count(),
                     'total_belum' => $items->count() - $lunas->count(),
                     'total_nominal' => $total,
                     'nominal_lunas' => $dibayar,
                     'nominal_belum' => $total - $dibayar,
-                    'per_anjem' => $perAnjem,
+                    'per_buku' => $perBuku,
                 ];
             })->sortBy('nis')->values();
 
-        return Inertia::render('Rekap/Anjem', [
+        return Inertia::render('Rekap/Buku', [
             'rekap' => $data,
             'totalSemua' => $data->sum('total_nominal'),
             'totalLunas' => $data->sum('nominal_lunas'),

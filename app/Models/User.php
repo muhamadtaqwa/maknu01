@@ -13,24 +13,24 @@ class User extends Authenticatable
         'username',
         'password',
         'role',
-        'latitude',
-        'longitude',
-        'notif_subuh',
-        'notif_dzuhur',
-        'notif_ashar',
-        'notif_maghrib',
-        'notif_isya',
     ];
 
     protected $hidden = ['password', 'remember_token'];
 
-    public function ustadz()
+    protected function casts(): array
     {
-        return $this->hasOne(Ustadz::class);
+        return [
+            'password' => 'hashed',
+        ];
     }
 
-    public function santri()
+    public function guru()
     {
-        return $this->hasOne(Santri::class);
+        return $this->hasOne(Guru::class);
+    }
+
+    public function siswa()
+    {
+        return $this->hasOne(Siswa::class);
     }
 }

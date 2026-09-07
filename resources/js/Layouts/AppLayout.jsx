@@ -1,52 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePage, Link, router } from "@inertiajs/react";
 import { Toaster } from "react-hot-toast";
-import axios from "axios";
 import {
     Home,
-    CloudSun,
-    BookOpenText,
     QrCode,
     CalendarDays,
     GraduationCap,
     Users,
-    FileSignature,
-    Mail,
-    FileDown,
     Wallet,
     ChartBar,
-    FileText,
     ClipboardList,
     ClipboardCheck,
-    Building,
-    Box,
     User,
     LogOut,
     Menu,
     X,
     PanelLeftClose,
     PanelLeftOpen,
-    TrendingUp,
-    BookMarked,
 } from "lucide-react";
-
-function urlBase64ToUint8Array(base64String) {
-    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding)
-        .replace(/-/g, "+")
-        .replace(/_/g, "/");
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-}
 
 export default function AppLayout({ children }) {
     const { auth } = usePage().props;
     const user = auth.user;
-    const profil = user.ustadz || user.santri;
+    const profil = user.guru || user.siswa;
     const initial = profil?.nama_lengkap?.charAt(0) || "A";
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -60,95 +36,35 @@ export default function AppLayout({ children }) {
         localStorage.setItem("sidebarCollapsed", newState);
     };
 
-    useEffect(() => {
-        if (auth?.user) {
-            setupPushNotification();
-        }
-    }, [auth]);
-
-    const setupPushNotification = async () => {
-        try {
-            if (!("Notification" in window) || !("serviceWorker" in navigator))
-                return;
-            const permission = await Notification.requestPermission();
-            if (permission !== "granted") return;
-            const registration = await navigator.serviceWorker.ready;
-            let subscription = await registration.pushManager.getSubscription();
-            if (!subscription) {
-                subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(
-                        import.meta.env.VITE_VAPID_PUBLIC_KEY,
-                    ),
-                });
-            }
-            const subscriptionData = subscription.toJSON();
-            axios
-                .post("/push-subscribe", {
-                    endpoint: subscriptionData.endpoint,
-                    p256dh: subscriptionData.keys.p256dh,
-                    auth: subscriptionData.keys.auth,
-                })
-                .catch(() => {});
-        } catch (error) {
-            // Silent fail
-        }
-    };
-
     const menuUtama = [
         {
             label: "Dashboard",
             path: "/",
             icon: Home,
-            roles: ["admin", "ustadz", "santri"],
-        },
-        {
-            label: "Jadwal Sholat",
-            path: "/jadwal-sholat",
-            icon: CloudSun,
-            roles: [],
-        },
-        {
-            label: "Al-Qur'an",
-            path: "/al-quran",
-            icon: BookOpenText,
-            roles: [],
+            roles: ["admin", "guru", "siswa"],
         },
         {
             label: "QR Code",
             path: "/qr",
             icon: QrCode,
-            roles: ["admin", "ustadz", "santri"],
+            roles: ["admin", "guru", "siswa"],
         },
         {
             label: "Timeline",
             path: "/timeline",
             icon: CalendarDays,
-            roles: ["admin", "ustadz", "santri"],
+            roles: ["admin", "guru", "siswa"],
         },
     ];
 
     const menuData = [
         {
             label: "Siswa",
-            path: "/santri",
+            path: "/siswa",
             icon: GraduationCap,
             roles: ["admin"],
         },
-        { label: "Guru", path: "/ustadz", icon: Users, roles: ["admin"] },
-        {
-            label: "PSB",
-            path: "/psb/verifikasi",
-            icon: FileSignature,
-            roles: [],
-        },
-        { label: "Surat", path: "/surat", icon: Mail, roles: [] },
-        {
-            label: "Export EMIS",
-            path: "/export",
-            icon: FileDown,
-            roles: [],
-        },
+        { label: "Guru", path: "/guru", icon: Users, roles: ["admin"] },
     ];
 
     const menuKeuangan = [
@@ -159,50 +75,20 @@ export default function AppLayout({ children }) {
             roles: ["admin"],
         },
         { label: "Rekap", path: "/rekap", icon: ChartBar, roles: ["admin"] },
-        {
-            label: "Tagihan",
-            path: "/tagihan",
-            icon: FileText,
-            roles: [],
-        },
-        {
-            label: "Cashflow",
-            path: "/cashflow",
-            icon: TrendingUp,
-            roles: [],
-        },
     ];
 
     const menuKegiatan = [
         {
-            label: "Program Tahfidz",
-            path: "/tahfidz",
-            icon: BookMarked,
-            roles: [],
-        },
-        {
             label: "Presensi Guru",
-            path: "/presensi",
+            path: "/presensi-guru",
             icon: ClipboardList,
-            roles: ["admin", "ustadz"],
+            roles: ["admin", "guru"],
         },
         {
             label: "Presensi Siswa",
-            path: "/presensi-santri",
+            path: "/presensi-siswa",
             icon: ClipboardCheck,
-            roles: ["admin", "ustadz"],
-        },
-        {
-            label: "Pinjam Gedung",
-            path: "/pinjam-gedung",
-            icon: Building,
-            roles: [],
-        },
-        {
-            label: "Inventaris",
-            path: "/inventaris",
-            icon: Box,
-            roles: [],
+            roles: ["admin", "guru"],
         },
     ];
 
@@ -211,22 +97,12 @@ export default function AppLayout({ children }) {
             label: "Profil",
             path: "/profil",
             icon: User,
-            roles: ["admin", "ustadz", "santri"],
+            roles: ["admin", "guru", "siswa"],
         },
     ];
 
     const filterMenu = (menu) =>
-        menu.filter((m) => {
-            if (m.roles.includes(user.role)) return true;
-            if (
-                user.role === "santri" &&
-                m.nis &&
-                user.santri &&
-                m.nis.includes(user.santri.nis)
-            )
-                return true;
-            return false;
-        });
+        menu.filter((m) => m.roles.includes(user.role));
 
     const bottomNavByRole = {
         admin: [
@@ -234,27 +110,30 @@ export default function AppLayout({ children }) {
             { label: "Bayar", path: "/pembayaran", icon: Wallet },
             { label: "QR", path: "/qr", icon: QrCode, isCenter: true },
             { label: "Rekap", path: "/rekap", icon: ChartBar },
-            { label: "Presensi", path: "/presensi", icon: ClipboardList },
+            { label: "Presensi", path: "/presensi-guru", icon: ClipboardList },
         ],
-        ustadz: [
+        guru: [
             { label: "Beranda", path: "/", icon: Home },
             { label: "Timeline", path: "/timeline", icon: CalendarDays },
             { label: "QR", path: "/qr", icon: QrCode, isCenter: true },
-            { label: "Presensi", path: "/presensi", icon: ClipboardList },
+            { label: "Presensi", path: "/presensi-guru", icon: ClipboardList },
             { label: "Profil", path: "/profil", icon: User },
         ],
-        santri: [
+        siswa: [
             { label: "Beranda", path: "/", icon: Home },
             { label: "Timeline", path: "/timeline", icon: CalendarDays },
             { label: "QR", path: "/qr", icon: QrCode, isCenter: true },
-            { label: "Presensi", path: "/presensi", icon: ClipboardList },
+            {
+                label: "Presensi",
+                path: "/presensi-siswa",
+                icon: ClipboardCheck,
+            },
             { label: "Profil", path: "/profil", icon: User },
         ],
     };
 
     const bottomNav = bottomNavByRole[user.role] || [];
     const currentPath = usePage().url;
-    const hideBottomNav = currentPath === "/al-quran";
     const handleLogout = () => {
         router.post("/logout");
     };
@@ -517,53 +396,51 @@ export default function AppLayout({ children }) {
 
             {/* Main Content */}
             <main
-                className={`pb-24 md:pb-6 transition-all duration-300 ${sidebarCollapsed ? "md:ml-20" : "md:ml-60"} ${hideBottomNav ? "pb-0" : ""}`}
+                className={`pb-24 md:pb-6 transition-all duration-300 ${sidebarCollapsed ? "md:ml-20" : "md:ml-60"}`}
             >
                 <div className="p-4 md:p-6">{children}</div>
             </main>
 
             {/* Bottom Nav Mobile */}
-            {!hideBottomNav && (
-                <nav className="fixed bottom-3 left-4 right-4 bg-white/90 backdrop-blur-xl rounded-full shadow-2xl border border-white/50 z-30 md:hidden">
-                    <div className="flex items-end justify-around px-2 py-1.5 relative">
-                        {bottomNav.map((b) =>
-                            b.isCenter ? (
-                                <Link
-                                    key={b.path}
-                                    href={b.path}
-                                    className="flex flex-col items-center -mt-7 relative z-10"
+            <nav className="fixed bottom-3 left-4 right-4 bg-white/90 backdrop-blur-xl rounded-full shadow-2xl border border-white/50 z-30 md:hidden">
+                <div className="flex items-end justify-around px-2 py-1.5 relative">
+                    {bottomNav.map((b) =>
+                        b.isCenter ? (
+                            <Link
+                                key={b.path}
+                                href={b.path}
+                                className="flex flex-col items-center -mt-7 relative z-10"
+                            >
+                                <div
+                                    className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 border-white transition-all ${isActive(b.path) ? "bg-gradient-to-r from-[#009788] to-[#00b5a5] scale-110" : "bg-gradient-to-r from-[#009788] to-[#00b5a5]"}`}
                                 >
-                                    <div
-                                        className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 border-white transition-all ${isActive(b.path) ? "bg-gradient-to-r from-[#009788] to-[#00b5a5] scale-110" : "bg-gradient-to-r from-[#009788] to-[#00b5a5]"}`}
-                                    >
-                                        <b.icon className="w-6 h-6 text-white" />
-                                    </div>
-                                    <span
-                                        className={`text-[10px] font-bold mt-0.5 ${isActive(b.path) ? "text-[#009788]" : "text-slate-400"}`}
-                                    >
-                                        {b.label}
-                                    </span>
-                                </Link>
-                            ) : (
-                                <Link
-                                    key={b.path}
-                                    href={b.path}
-                                    className={`flex flex-col items-center py-1.5 px-1 min-w-[52px] transition-all ${isActive(b.path) ? "text-[#009788] scale-110" : "text-slate-400 hover:text-[#00b5a5]"}`}
+                                    <b.icon className="w-6 h-6 text-white" />
+                                </div>
+                                <span
+                                    className={`text-[10px] font-bold mt-0.5 ${isActive(b.path) ? "text-[#009788]" : "text-slate-400"}`}
                                 >
-                                    <div
-                                        className={`p-1.5 rounded-full transition-all ${isActive(b.path) ? "bg-[#009788]/10" : ""}`}
-                                    >
-                                        <b.icon className="w-5 h-5" />
-                                    </div>
-                                    <span className="text-[10px] font-bold mt-0.5">
-                                        {b.label}
-                                    </span>
-                                </Link>
-                            ),
-                        )}
-                    </div>
-                </nav>
-            )}
+                                    {b.label}
+                                </span>
+                            </Link>
+                        ) : (
+                            <Link
+                                key={b.path}
+                                href={b.path}
+                                className={`flex flex-col items-center py-1.5 px-1 min-w-[52px] transition-all ${isActive(b.path) ? "text-[#009788] scale-110" : "text-slate-400 hover:text-[#00b5a5]"}`}
+                            >
+                                <div
+                                    className={`p-1.5 rounded-full transition-all ${isActive(b.path) ? "bg-[#009788]/10" : ""}`}
+                                >
+                                    <b.icon className="w-5 h-5" />
+                                </div>
+                                <span className="text-[10px] font-bold mt-0.5">
+                                    {b.label}
+                                </span>
+                            </Link>
+                        ),
+                    )}
+                </div>
+            </nav>
         </div>
     );
 }

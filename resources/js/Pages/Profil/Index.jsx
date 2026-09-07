@@ -6,9 +6,8 @@ import AppLayout from "@/Layouts/AppLayout";
 export default function Index() {
     const { auth } = usePage().props;
     const user = auth.user;
-    const profil = user.ustadz || user.santri;
+    const profil = user.guru || user.siswa;
     const [showModal, setShowModal] = useState(false);
-    const [loadingNotif, setLoadingNotif] = useState(null);
 
     const prodiList = [
         "Rekayasa Perangkat Lunak",
@@ -57,10 +56,9 @@ export default function Index() {
     ];
 
     const initialData = () => {
-        if (user.role === "ustadz") {
+        if (user.role === "guru") {
             return {
                 nama_lengkap: profil?.nama_lengkap || "",
-                nip_nuptk: profil?.nip_nuptk || "",
                 nik: profil?.nik || "",
                 tempat_lahir: profil?.tempat_lahir || "",
                 tanggal_lahir: profil?.tanggal_lahir || "",
@@ -71,7 +69,7 @@ export default function Index() {
                 password: "",
             };
         }
-        if (user.role === "santri") {
+        if (user.role === "siswa") {
             return {
                 nama_lengkap: profil?.nama_lengkap || "",
                 nik: profil?.nik || "",
@@ -115,33 +113,6 @@ export default function Index() {
         router.post("/logout");
     };
 
-    const notifList = [
-        "Acara",
-        "Adzan",
-        "Tenggat",
-        "Tagihan",
-        "Lunas",
-        "Ditolak",
-    ];
-
-    const kirimTestNotif = (jenis) => {
-        setLoadingNotif(jenis);
-        router.post(
-            "/test-notif/jenis",
-            { jenis: jenis.toLowerCase() },
-            {
-                onSuccess: () => {
-                    setLoadingNotif(null);
-                    toast.success("Notifikasi dikirim!");
-                },
-                onError: () => {
-                    setLoadingNotif(null);
-                    toast.error("Gagal mengirim.");
-                },
-            },
-        );
-    };
-
     const submit = (e) => {
         e.preventDefault();
         put("/profil", {
@@ -177,9 +148,9 @@ export default function Index() {
                             {profil?.nama_lengkap || "Admin Sekolah"}
                         </h3>
                         <p className="text-white/80 text-sm capitalize mt-1">
-                            {user.role === "ustadz"
+                            {user.role === "guru"
                                 ? "Guru"
-                                : user.role === "santri"
+                                : user.role === "siswa"
                                   ? "Siswa"
                                   : user.role}
                         </p>
@@ -189,7 +160,7 @@ export default function Index() {
                     </div>
 
                     {/* Kolom 2: Informasi Profil / Ganti Password */}
-                    {(user.role === "ustadz" || user.role === "santri") && (
+                    {(user.role === "guru" || user.role === "siswa") && (
                         <div className="rounded-[30px] border border-teal-100 bg-white p-5 shadow-2xl">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="font-semibold text-sm text-slate-700 flex items-center gap-2">
@@ -203,13 +174,8 @@ export default function Index() {
                                 </button>
                             </div>
                             <div className="text-xs text-slate-500 space-y-1.5 max-h-[400px] overflow-y-auto pr-1">
-                                {user.role === "ustadz" && (
+                                {user.role === "guru" && (
                                     <>
-                                        <Row label="NIG" value={profil?.niu} />
-                                        <Row
-                                            label="NIP/NUPTK"
-                                            value={profil?.nip_nuptk}
-                                        />
                                         <Row label="NIK" value={profil?.nik} />
                                         <Row
                                             label="Nama"
@@ -245,7 +211,7 @@ export default function Index() {
                                         />
                                     </>
                                 )}
-                                {user.role === "santri" && (
+                                {user.role === "siswa" && (
                                     <>
                                         <Row label="NIS" value={profil?.nis} />
                                         <Row
@@ -353,7 +319,7 @@ export default function Index() {
                         </div>
                     )}
 
-                    {/* Kolom 3: Logout untuk admin */}
+                    {/* Kolom 3: Logout */}
                     <div className="space-y-4">
                         <button
                             onClick={handleLogout}
@@ -392,20 +358,8 @@ export default function Index() {
                                         className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
                                         required
                                     />
-                                    {user.role === "ustadz" && (
+                                    {user.role === "guru" && (
                                         <>
-                                            <input
-                                                type="text"
-                                                placeholder="NIP/NIPPPK/NUPTK"
-                                                value={data.nip_nuptk}
-                                                onChange={(e) =>
-                                                    setData(
-                                                        "nip_nuptk",
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
-                                            />
                                             <input
                                                 type="text"
                                                 placeholder="NIK"
@@ -512,7 +466,7 @@ export default function Index() {
                                             />
                                         </>
                                     )}
-                                    {user.role === "santri" && (
+                                    {user.role === "siswa" && (
                                         <>
                                             <input
                                                 type="text"

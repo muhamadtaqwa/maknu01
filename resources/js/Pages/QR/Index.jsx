@@ -13,16 +13,17 @@ export default function Index() {
     const [mode, setMode] = useState("camera");
     const [manualInput, setManualInput] = useState("");
     const [sending, setSending] = useState(false);
+    const [target, setTarget] = useState("siswa"); // "siswa" atau "guru"
     const scannerRef = useRef(null);
     const inputRef = useRef(null);
     const qrRef = useRef(null);
 
     const isAdmin = user.role === "admin";
-    const profil = user.ustadz || user.santri;
+    const profil = user.guru || user.siswa;
     const qrValue =
-        user.role === "ustadz"
-            ? profil?.niu
-            : user.role === "santri"
+        user.role === "guru"
+            ? String(profil?.id)
+            : user.role === "siswa"
               ? profil?.nis
               : "";
     const nama = profil?.nama_lengkap || "Admin";
@@ -47,36 +48,33 @@ export default function Index() {
         }
     }, [scanResult]);
 
-    const kirimPresensi = (nis) => {
+    const kirimPresensi = (nilai) => {
         setSending(true);
-        router.post(
-            "/presensi-santri",
-            { nis },
-            {
-                onSuccess: () => {
-                    playBeep();
-                    toast.success(`Presensi ${nis} berhasil!`);
+
+        const url = target === "guru" ? "/presensi-guru" : "/presensi-siswa";
+        const data = target === "guru" ? { guru_id: nilai } : { nis: nilai };
+
+        router.post(url, data, {
+            onSuccess: () => {
+                playBeep();
+                toast.success("Presensi berhasil!");
+                setScanResult(null);
+                setManualInput("");
+                setSending(false);
+                setTimeout(() => {
+                    if (mode === "camera") startScan();
+                }, 1500);
+            },
+            onError: (errors) => {
+                toast.error(errors?.error || "Presensi gagal.");
+                setTimeout(() => {
                     setScanResult(null);
                     setManualInput("");
-                    setSending(false);
-                    setTimeout(() => {
-                        if (mode === "camera") startScan();
-                    }, 1500);
-                },
-                onError: (errors) => {
-                    toast.error(
-                        errors?.error ||
-                            "Siswa sudah presensi atau data tidak ditemukan.",
-                    );
-                    setTimeout(() => {
-                        setScanResult(null);
-                        setManualInput("");
-                        if (mode === "camera") startScan();
-                    }, 2000);
-                    setSending(false);
-                },
+                    if (mode === "camera") startScan();
+                }, 2000);
+                setSending(false);
             },
-        );
+        });
     };
 
     const playBeep = () => {
@@ -190,11 +188,27 @@ export default function Index() {
         <AppLayout>
             <div className="max-w-md mx-auto text-center">
                 <h2 className="text-lg font-bold text-slate-800 mb-6">
-                    {isAdmin ? "Presensi Siswa" : "QR Code Saya"}
+                    {isAdmin ? "Scan Presensi" : "QR Code Saya"}
                 </h2>
 
                 {isAdmin ? (
                     <>
+                        {/* Pilih target presensi */}
+                        <div className="flex gap-2 mb-4 bg-slate-100 rounded-full p-1">
+                            <button
+                                onClick={() => setTarget("siswa")}
+                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${target === "siswa" ? "bg-white shadow text-[#009788]" : "text-slate-500"}`}
+                            >
+                                Siswa
+                            </button>
+                            <button
+                                onClick={() => setTarget("guru")}
+                                className={`flex-1 py-2 rounded-full text-xs font-medium transition ${target === "guru" ? "bg-white shadow text-[#009788]" : "text-slate-500"}`}
+                            >
+                                Guru
+                            </button>
+                        </div>
+
                         <div className="flex gap-2 mb-4 bg-slate-100 rounded-full p-1">
                             <button
                                 onClick={() => {
@@ -253,7 +267,11 @@ export default function Index() {
                                     onChange={(e) =>
                                         setManualInput(e.target.value)
                                     }
-                                    placeholder="Scan barcode atau input manual..."
+                                    placeholder={
+                                        target === "guru"
+                                            ? "Masukkan ID Guru"
+                                            : "Masukkan NIS Siswa"
+                                    }
                                     className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-xs text-center font-mono tracking-widest focus:border-[#009788] focus:ring-4 focus:ring-teal-100 outline-none"
                                     autoFocus
                                 />

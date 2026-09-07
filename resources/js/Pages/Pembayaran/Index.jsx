@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import AppLayout from "@/Layouts/AppLayout";
 
 export default function Index() {
-    const { pembayaran, santris, jenisPembayaran, filters, auth } =
+    const { pembayaran, siswas, jenisPembayaran, filters, auth } =
         usePage().props;
     const isAdmin = auth.user.role === "admin";
 
@@ -16,7 +16,6 @@ export default function Index() {
     const [cicilanError, setCicilanError] = useState("");
     const [editData, setEditData] = useState(null);
     const [search, setSearch] = useState(filters.search || "");
-    const [verifyingId, setVerifyingId] = useState(null);
     const [cicilanSubmitting, setCicilanSubmitting] = useState(false);
     const [lunasiSubmitting, setLunasiSubmitting] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
@@ -24,19 +23,15 @@ export default function Index() {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [deleteKategoriTarget, setDeleteKategoriTarget] = useState(null);
     const [statusFilter, setStatusFilter] = useState(filters.status || "semua");
-    const [showBukti, setShowBukti] = useState(null);
-    const [verifikasiTarget, setVerifikasiTarget] = useState(null);
-    const [nominalVerifikasi, setNominalVerifikasi] = useState("");
     const firstFieldRef = useRef(null);
 
-    const { data, setData, reset, processing, errors, clearErrors } = useForm({
+    const { data, setData, reset, processing, clearErrors } = useForm({
         nis: "",
         jenis: jenisPembayaran[0]?.nama || "SPP",
         nama_pembayaran: "",
         nominal: "",
         tgl_jatuh_tempo: "",
         semester: "Semester Gasal",
-        bulan: "Januari",
         tahun: String(new Date().getFullYear()),
     });
 
@@ -45,32 +40,14 @@ export default function Index() {
         nama_pembayaran: "",
         nominal: "",
         semester: "Semester Gasal",
-        bulan: "Januari",
         tahun: String(new Date().getFullYear()),
-        target: "putra",
         kecualikan: "",
     });
 
-    const bulanList = [
-        "Januari",
-        "Februari",
-        "Maret",
-        "April",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agustus",
-        "September",
-        "Oktober",
-        "November",
-        "Desember",
-    ];
-
     const tahunList = ["2025", "2026", "2027"];
 
-    const getNamaOtomatis = (jenis, semester, bulan, tahun) => {
+    const getNamaOtomatis = (jenis, semester, tahun) => {
         if (jenis === "SPP") return `${semester} ${tahun}`;
-        if (jenis === "Kas") return `${bulan} ${tahun}`;
         return "";
     };
 
@@ -95,7 +72,6 @@ export default function Index() {
             nominal: p.nominal,
             tgl_jatuh_tempo: p.tgl_jatuh_tempo || "",
             semester: "Semester Gasal",
-            bulan: "Januari",
             tahun: String(new Date().getFullYear()),
         });
         setShowModal(true);
@@ -114,10 +90,9 @@ export default function Index() {
             const namaOtomatis = getNamaOtomatis(
                 data.jenis,
                 data.semester,
-                data.bulan,
                 data.tahun,
             );
-            if (namaOtomatis && data.jenis !== "Kitab") {
+            if (namaOtomatis) {
                 finalData.nama_pembayaran = namaOtomatis;
             }
         }
@@ -146,11 +121,7 @@ export default function Index() {
         setSearch(value);
         router.get(
             "/pembayaran",
-            {
-                search: value,
-                jenis: filters.jenis || "",
-                status: statusFilter,
-            },
+            { search: value, jenis: filters.jenis || "", status: statusFilter },
             { preserveState: true, replace: true },
         );
     };
@@ -159,11 +130,7 @@ export default function Index() {
         setStatusFilter(value);
         router.get(
             "/pembayaran",
-            {
-                status: value,
-                jenis: filters.jenis || "",
-                search: search,
-            },
+            { status: value, jenis: filters.jenis || "", search: search },
             { preserveState: true, replace: true },
         );
     };
@@ -245,36 +212,6 @@ export default function Index() {
         });
     };
 
-    const openVerifikasi = (p) => {
-        setVerifikasiTarget(p);
-        setNominalVerifikasi(p.sisa || "");
-    };
-
-    const handleVerifikasi = (p, status) => {
-        setVerifyingId(p.id);
-        router.post(
-            `/pembayaran/${p.id}/verifikasi`,
-            {
-                status_verifikasi: status,
-                nominal_dibayar:
-                    status === "lunas" ? nominalVerifikasi : undefined,
-            },
-            {
-                onSuccess: () => {
-                    toast.success(
-                        status === "lunas"
-                            ? "Pembayaran disetujui!"
-                            : "Pembayaran ditolak!",
-                    );
-                    setVerifikasiTarget(null);
-                    setNominalVerifikasi("");
-                },
-                onError: () => toast.error("Gagal verifikasi."),
-                onFinish: () => setVerifyingId(null),
-            },
-        );
-    };
-
     const confirmDeleteKategori = (id, nama) =>
         setDeleteKategoriTarget({ id, nama });
     const handleDeleteKategori = () => {
@@ -294,20 +231,12 @@ export default function Index() {
     const statusColor = (s) =>
         s === "lunas"
             ? "bg-emerald-50 text-emerald-600"
-            : s === "ditolak"
-              ? "bg-red-50 text-red-500"
-              : s === "dicicil"
-                ? "bg-amber-50 text-amber-600"
-                : "bg-slate-100 text-slate-500";
+            : s === "dicicil"
+              ? "bg-amber-50 text-amber-600"
+              : "bg-slate-100 text-slate-500";
 
     const statusLabel = (s) =>
-        s === "lunas"
-            ? "Lunas"
-            : s === "ditolak"
-              ? "Ditolak"
-              : s === "dicicil"
-                ? "Dicicil"
-                : "Menunggu";
+        s === "lunas" ? "Lunas" : s === "dicicil" ? "Dicicil" : "Menunggu";
 
     return (
         <AppLayout>
@@ -386,117 +315,8 @@ export default function Index() {
                         <option value="belum">Belum</option>
                         <option value="dicicil">Dicicil</option>
                         <option value="lunas">Lunas</option>
-                        <option value="ditolak">Ditolak</option>
                     </select>
                 </div>
-
-                {/* Modal Lihat Bukti */}
-                {showBukti && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div
-                            className="absolute inset-0 bg-black/70"
-                            onClick={() => setShowBukti(null)}
-                        ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-lg p-4 border border-teal-100">
-                            <div className="flex items-center justify-between mb-3">
-                                <h3 className="font-semibold text-lg">
-                                    Bukti Transfer
-                                </h3>
-                                <button
-                                    onClick={() => setShowBukti(null)}
-                                    className="text-slate-400 hover:text-slate-600 text-lg"
-                                >
-                                    &times;
-                                </button>
-                            </div>
-                            <img
-                                src={`/storage/${showBukti}`}
-                                alt="Bukti Transfer"
-                                className="w-full rounded-2xl"
-                            />
-                        </div>
-                    </div>
-                )}
-
-                {/* Modal Verifikasi */}
-                {verifikasiTarget && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div
-                            className="absolute inset-0 bg-black/50"
-                            onClick={() => setVerifikasiTarget(null)}
-                        ></div>
-                        <div className="relative bg-white rounded-[30px] shadow-2xl w-full max-w-sm p-6 border border-teal-100">
-                            <h3 className="font-semibold text-lg mb-4">
-                                Verifikasi Pembayaran
-                            </h3>
-                            {verifikasiTarget.bukti && (
-                                <img
-                                    src={`/storage/${verifikasiTarget.bukti}`}
-                                    alt="Bukti"
-                                    className="w-full h-40 object-cover rounded-2xl mb-3"
-                                />
-                            )}
-                            <div className="text-xs text-slate-500 mb-3">
-                                <p>
-                                    Siswa:{" "}
-                                    {verifikasiTarget.santri?.nama_lengkap}
-                                </p>
-                                <p>
-                                    Nominal Tagihan: Rp{" "}
-                                    {parseInt(
-                                        verifikasiTarget.nominal || 0,
-                                    ).toLocaleString()}
-                                </p>
-                                <p>
-                                    Sisa: Rp{" "}
-                                    {parseInt(
-                                        verifikasiTarget.sisa || 0,
-                                    ).toLocaleString()}
-                                </p>
-                            </div>
-                            <input
-                                type="number"
-                                value={nominalVerifikasi}
-                                onChange={(e) =>
-                                    setNominalVerifikasi(e.target.value)
-                                }
-                                placeholder="Nominal yang dibayar"
-                                className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none mb-3"
-                            />
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() =>
-                                        handleVerifikasi(
-                                            verifikasiTarget,
-                                            "ditolak",
-                                        )
-                                    }
-                                    disabled={
-                                        verifyingId === verifikasiTarget.id
-                                    }
-                                    className="flex-1 bg-red-500 text-white py-2.5 rounded-2xl text-sm font-semibold"
-                                >
-                                    Tolak
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        handleVerifikasi(
-                                            verifikasiTarget,
-                                            "lunas",
-                                        )
-                                    }
-                                    disabled={
-                                        verifyingId === verifikasiTarget.id ||
-                                        !nominalVerifikasi
-                                    }
-                                    className="flex-1 bg-emerald-500 text-white py-2.5 rounded-2xl text-sm font-semibold"
-                                >
-                                    Terima
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* Kategori Modal */}
                 {showKategori && isAdmin && (
@@ -658,63 +478,7 @@ export default function Index() {
                                     </>
                                 )}
 
-                                {generateForm.data.jenis === "Kas" && (
-                                    <>
-                                        <select
-                                            value={generateForm.data.target}
-                                            onChange={(e) =>
-                                                generateForm.setData(
-                                                    "target",
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white"
-                                        >
-                                            <option value="putra">
-                                                Putra (PA)
-                                            </option>
-                                            <option value="putri">
-                                                Putri (PI)
-                                            </option>
-                                        </select>
-                                        <select
-                                            value={generateForm.data.bulan}
-                                            onChange={(e) =>
-                                                generateForm.setData(
-                                                    "bulan",
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white"
-                                        >
-                                            {bulanList.map((b) => (
-                                                <option key={b} value={b}>
-                                                    {b}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <select
-                                            value={generateForm.data.tahun}
-                                            onChange={(e) =>
-                                                generateForm.setData(
-                                                    "tahun",
-                                                    e.target.value,
-                                                )
-                                            }
-                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white"
-                                        >
-                                            {tahunList.map((t) => (
-                                                <option key={t} value={t}>
-                                                    {t}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </>
-                                )}
-
-                                {!["SPP", "Kas"].includes(
-                                    generateForm.data.jenis,
-                                ) && (
+                                {!["SPP"].includes(generateForm.data.jenis) && (
                                     <input
                                         type="text"
                                         placeholder="Nama Pembayaran"
@@ -810,16 +574,6 @@ export default function Index() {
                                         >
                                             {statusLabel(p.status)}
                                         </span>
-                                        {p.bukti && (
-                                            <button
-                                                onClick={() =>
-                                                    setShowBukti(p.bukti)
-                                                }
-                                                className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full"
-                                            >
-                                                Lihat Bukti
-                                            </button>
-                                        )}
                                     </div>
                                     {isAdmin && (
                                         <div className="flex gap-1">
@@ -850,7 +604,7 @@ export default function Index() {
                                     <Row label="NIS" value={p.nis} />
                                     <Row
                                         label="Siswa"
-                                        value={p.santri?.nama_lengkap}
+                                        value={p.siswa?.nama_lengkap}
                                     />
                                     <Row
                                         label="Nominal"
@@ -902,17 +656,6 @@ export default function Index() {
                                                 </button>
                                             </>
                                         )}
-                                        {p.status_verifikasi === "menunggu" &&
-                                            p.bukti && (
-                                                <button
-                                                    onClick={() =>
-                                                        openVerifikasi(p)
-                                                    }
-                                                    className="text-[10px] bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg"
-                                                >
-                                                    Verifikasi
-                                                </button>
-                                            )}
                                     </div>
                                 )}
                                 {showCicilan === p.id && isAdmin && (
@@ -1015,7 +758,7 @@ export default function Index() {
                                         required
                                     >
                                         <option value="">Pilih Siswa</option>
-                                        {santris.map((s) => (
+                                        {siswas.map((s) => (
                                             <option key={s.nis} value={s.nis}>
                                                 {s.nama_lengkap} ({s.nis})
                                             </option>
@@ -1079,38 +822,7 @@ export default function Index() {
                                     </>
                                 )}
 
-                                {data.jenis === "Kas" && (
-                                    <>
-                                        <select
-                                            value={data.bulan}
-                                            onChange={(e) =>
-                                                setData("bulan", e.target.value)
-                                            }
-                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white"
-                                        >
-                                            {bulanList.map((b) => (
-                                                <option key={b} value={b}>
-                                                    {b}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <select
-                                            value={data.tahun}
-                                            onChange={(e) =>
-                                                setData("tahun", e.target.value)
-                                            }
-                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm bg-white"
-                                        >
-                                            {tahunList.map((t) => (
-                                                <option key={t} value={t}>
-                                                    {t}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </>
-                                )}
-
-                                {!["SPP", "Kas"].includes(data.jenis) && (
+                                {!["SPP"].includes(data.jenis) && (
                                     <input
                                         type="text"
                                         placeholder="Nama Pembayaran"
