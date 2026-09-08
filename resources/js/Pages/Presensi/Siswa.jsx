@@ -139,7 +139,7 @@ export default function Siswa() {
                                         key={p.id}
                                         className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"
                                     >
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
                                                     {p.nama?.charAt(0)}
@@ -153,22 +153,34 @@ export default function Siswa() {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-xs font-mono text-slate-400">
-                                                    {formatJam(p.jam_masuk)}
-                                                </p>
-                                                {isAdmin && (
-                                                    <button
-                                                        onClick={() =>
-                                                            handleBatalkan(p.id)
-                                                        }
-                                                        className="text-[10px] text-red-400 hover:text-red-600"
-                                                    >
-                                                        Batal
-                                                    </button>
-                                                )}
-                                            </div>
+                                            {p.status === "terlambat" && (
+                                                <span className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full">
+                                                    Terlambat
+                                                </span>
+                                            )}
                                         </div>
+
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs text-slate-500">
+                                                Jam Masuk
+                                            </span>
+                                            <span className="text-sm font-medium text-slate-700">
+                                                {formatJam(p.jam_masuk)}
+                                            </span>
+                                        </div>
+
+                                        {isAdmin && (
+                                            <div className="mt-3 pt-3 border-t border-slate-100">
+                                                <button
+                                                    onClick={() =>
+                                                        handleBatalkan(p.id)
+                                                    }
+                                                    className="w-full bg-red-500 text-white px-3 py-2 rounded-full text-xs font-semibold hover:bg-red-600 transition-all"
+                                                >
+                                                    Batal
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -251,6 +263,14 @@ export default function Siswa() {
                                             </p>
                                             <p className="text-[10px] text-slate-400">
                                                 Tidak
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-amber-500">
+                                                {r.total_terlambat || 0}
+                                            </p>
+                                            <p className="text-[10px] text-slate-400">
+                                                Terlambat
                                             </p>
                                         </div>
                                     </div>
@@ -339,6 +359,14 @@ export default function Siswa() {
                                                 </p>
                                                 <p className="text-[10px] text-slate-400">
                                                     Tidak
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold text-amber-500">
+                                                    {r.total_terlambat || 0}
+                                                </p>
+                                                <p className="text-[10px] text-slate-400">
+                                                    Terlambat
                                                 </p>
                                             </div>
                                         </div>

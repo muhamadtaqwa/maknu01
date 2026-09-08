@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
     // Presensi Guru
     Route::get('/presensi-guru', [PresensiGuruController::class, 'index']);
     Route::post('/presensi-guru', [PresensiGuruController::class, 'store']);
+    Route::delete('/presensi-guru/{id}/batalkan-masuk', [PresensiGuruController::class, 'batalkanMasuk']);
+    Route::delete('/presensi-guru/{id}/batalkan-pulang', [PresensiGuruController::class, 'batalkanPulang']);
     Route::delete('/presensi-guru/{id}', [PresensiGuruController::class, 'destroy']);
 
     // Presensi Siswa

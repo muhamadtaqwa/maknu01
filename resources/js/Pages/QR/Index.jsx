@@ -151,15 +151,28 @@ export default function Index() {
         setScanning(false);
     };
 
-    const handleBatalkan = () => {
+    const handleBatalkanMasuk = () => {
         if (!presensiHariIni) return;
-        if (!confirm("Batalkan presensi hari ini?")) return;
+        if (!confirm("Batalkan jam masuk?")) return;
+        router.delete(`/presensi-guru/${presensiHariIni.id}/batalkan-masuk`, {
+            onSuccess: () => toast.success("Jam masuk dibatalkan."),
+            onError: () => toast.error("Gagal membatalkan."),
+        });
+    };
 
-        const url = isGuru
-            ? `/presensi-guru/${presensiHariIni.id}`
-            : `/presensi-siswa/${presensiHariIni.id}`;
+    const handleBatalkanPulang = () => {
+        if (!presensiHariIni) return;
+        if (!confirm("Batalkan jam pulang?")) return;
+        router.delete(`/presensi-guru/${presensiHariIni.id}/batalkan-pulang`, {
+            onSuccess: () => toast.success("Jam pulang dibatalkan."),
+            onError: () => toast.error("Gagal membatalkan."),
+        });
+    };
 
-        router.delete(url, {
+    const handleBatalkanSiswa = () => {
+        if (!presensiHariIni) return;
+        if (!confirm("Batalkan presensi?")) return;
+        router.delete(`/presensi-siswa/${presensiHariIni.id}`, {
             onSuccess: () => toast.success("Presensi dibatalkan."),
             onError: () => toast.error("Gagal membatalkan."),
         });
@@ -223,6 +236,22 @@ export default function Index() {
             return !presensiHariIni;
         }
         return false;
+    };
+
+    // Warna status
+    const getStatusColor = () => {
+        if (!presensiHariIni) return "text-red-500";
+        if (isGuru && !presensiHariIni.jam_pulang) return "text-amber-500";
+        return "text-emerald-600";
+    };
+
+    const getStatusText = () => {
+        if (!presensiHariIni) return "Belum Presensi";
+        if (isGuru && !presensiHariIni.jam_pulang)
+            return "Sudah Presensi Masuk";
+        if (isGuru && presensiHariIni.jam_pulang) return "Presensi Lengkap";
+        if (isSiswa) return "Sudah Presensi";
+        return "";
     };
 
     return (
@@ -305,72 +334,104 @@ export default function Index() {
                             <h3 className="font-semibold text-sm text-slate-700 mb-3">
                                 Status Hari Ini
                             </h3>
-                            {presensiHariIni ? (
-                                <div className="space-y-2">
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-slate-500">
+                                        Status
+                                    </span>
+                                    <span
+                                        className={`text-sm font-semibold ${getStatusColor()}`}
+                                    >
+                                        {getStatusText()}
+                                    </span>
+                                </div>
+                                {presensiHariIni && (
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs text-slate-500">
-                                            Status
+                                            Keterangan
                                         </span>
-                                        <span className="text-sm text-emerald-600 font-semibold">
-                                            Sudah Presensi
+                                        <span
+                                            className={`text-sm font-medium ${presensiHariIni.status === "terlambat" ? "text-red-500" : "text-emerald-600"}`}
+                                        >
+                                            {presensiHariIni.status ===
+                                            "terlambat"
+                                                ? "Terlambat"
+                                                : "Tepat Waktu"}
                                         </span>
                                     </div>
-                                    {isGuru && (
-                                        <>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-slate-500">
-                                                    Jam Masuk
-                                                </span>
+                                )}
+                                {isGuru && presensiHariIni && (
+                                    <>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs text-slate-500">
+                                                Jam Masuk
+                                            </span>
+                                            <div className="flex items-center gap-2">
                                                 <span className="text-sm font-medium text-slate-700">
                                                     {presensiHariIni.jam_masuk?.slice(
                                                         0,
                                                         5,
                                                     )}
                                                 </span>
+                                                {!presensiHariIni.jam_pulang && (
+                                                    <button
+                                                        onClick={
+                                                            handleBatalkanMasuk
+                                                        }
+                                                        className="text-[10px] bg-red-500 text-white px-3 py-1 rounded-full font-semibold hover:bg-red-600 transition-all"
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                )}
                                             </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-slate-500">
-                                                    Jam Pulang
-                                                </span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs text-slate-500">
+                                                Jam Pulang
+                                            </span>
+                                            <div className="flex items-center gap-2">
                                                 <span className="text-sm font-medium text-slate-700">
                                                     {presensiHariIni.jam_pulang?.slice(
                                                         0,
                                                         5,
                                                     ) || "-"}
                                                 </span>
+                                                {presensiHariIni.jam_pulang && (
+                                                    <button
+                                                        onClick={
+                                                            handleBatalkanPulang
+                                                        }
+                                                        className="text-[10px] bg-red-500 text-white px-3 py-1 rounded-full font-semibold hover:bg-red-600 transition-all"
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                )}
                                             </div>
-                                        </>
-                                    )}
-                                    {isSiswa && (
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs text-slate-500">
-                                                Jam Masuk
-                                            </span>
+                                        </div>
+                                    </>
+                                )}
+                                {isSiswa && presensiHariIni && (
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-500">
+                                            Jam Masuk
+                                        </span>
+                                        <div className="flex items-center gap-2">
                                             <span className="text-sm font-medium text-slate-700">
                                                 {presensiHariIni.jam_masuk?.slice(
                                                     0,
                                                     5,
                                                 )}
                                             </span>
+                                            <button
+                                                onClick={handleBatalkanSiswa}
+                                                className="text-[10px] bg-red-500 text-white px-3 py-1 rounded-full font-semibold hover:bg-red-600 transition-all"
+                                            >
+                                                Batal
+                                            </button>
                                         </div>
-                                    )}
-                                    <button
-                                        onClick={handleBatalkan}
-                                        className="mt-2 w-full bg-red-50 text-red-500 px-4 py-2 rounded-full text-xs font-semibold hover:bg-red-100 transition"
-                                    >
-                                        Batalkan Presensi
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-slate-500">
-                                        Status
-                                    </span>
-                                    <span className="text-sm text-slate-400">
-                                        Belum Presensi
-                                    </span>
-                                </div>
-                            )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Scanner */}
@@ -398,12 +459,6 @@ export default function Index() {
                                 )}
                             </>
                         )}
-
-                        <p className="text-xs text-slate-400 mt-6">
-                            {isGuru
-                                ? "Scan QR di ruang guru untuk presensi"
-                                : "Scan QR di kelas untuk presensi"}
-                        </p>
                     </>
                 )}
             </div>

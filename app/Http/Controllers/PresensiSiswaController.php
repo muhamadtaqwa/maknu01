@@ -34,6 +34,7 @@ class PresensiSiswaController extends Controller
                     'nis' => $p->nis,
                     'nama' => $p->siswa->nama_lengkap ?? '-',
                     'jam_masuk' => $p->jam_masuk,
+                    'status' => $p->status,
                 ];
             });
 
@@ -64,12 +65,14 @@ class PresensiSiswaController extends Controller
             $rekap = $semuaSiswa->map(function ($s) use ($presensiMingguan, $totalHariEfektif) {
                 $items = $presensiMingguan->get($s->nis, collect());
                 $hadir = $items->count();
+                $terlambat = $items->where('status', 'terlambat')->count();
                 $tidak = $totalHariEfektif - $hadir;
                 return [
                     'nis' => $s->nis,
                     'nama' => $s->nama_lengkap,
                     'total_hadir' => $hadir,
                     'total_tidak' => max(0, $tidak),
+                    'total_terlambat' => $terlambat,
                 ];
             })->sortBy('nama')->values();
         }
@@ -86,12 +89,14 @@ class PresensiSiswaController extends Controller
             $rekap = $semuaSiswa->map(function ($s) use ($presensiBulanan, $totalHari) {
                 $items = $presensiBulanan->get($s->nis, collect());
                 $hadir = $items->count();
+                $terlambat = $items->where('status', 'terlambat')->count();
                 $tidak = $totalHari - $hadir;
                 return [
                     'nis' => $s->nis,
                     'nama' => $s->nama_lengkap,
                     'total_hadir' => $hadir,
                     'total_tidak' => max(0, $tidak),
+                    'total_terlambat' => $terlambat,
                     'terakhir_hadir' => $items->max('tanggal'),
                 ];
             })->sortBy('nama')->values();
@@ -117,6 +122,7 @@ class PresensiSiswaController extends Controller
 
         $tanggal = now()->format('Y-m-d');
         $jam = now()->format('H:i:s');
+        $status = $jam <= '07:00:00' ? 'tepat_waktu' : 'terlambat';
 
         $sudah = PresensiSiswa::where('nis', $request->nis)
             ->whereDate('tanggal', $tanggal)
@@ -130,6 +136,7 @@ class PresensiSiswaController extends Controller
             'nis' => $request->nis,
             'tanggal' => $tanggal,
             'jam_masuk' => $jam,
+            'status' => $status,
         ]);
 
         return back()->with('success', 'Presensi siswa berhasil.');

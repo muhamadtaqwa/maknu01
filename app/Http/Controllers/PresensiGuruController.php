@@ -35,6 +35,7 @@ class PresensiGuruController extends Controller
                     'nama' => $p->guru->nama_lengkap ?? '-',
                     'jam_masuk' => $p->jam_masuk,
                     'jam_pulang' => $p->jam_pulang,
+                    'status' => $p->status,
                 ];
             });
 
@@ -67,12 +68,14 @@ class PresensiGuruController extends Controller
             $rekap = $semuaGuru->map(function ($g) use ($presensiMingguan, $totalHariEfektif) {
                 $items = $presensiMingguan->get($g->id, collect());
                 $hadir = $items->count();
+                $terlambat = $items->where('status', 'terlambat')->count();
                 $tidak = $totalHariEfektif - $hadir;
                 return [
                     'guru_id' => $g->id,
                     'nama' => $g->nama_lengkap,
                     'total_hadir' => $hadir,
                     'total_tidak' => max(0, $tidak),
+                    'total_terlambat' => $terlambat,
                 ];
             })->sortBy('nama')->values();
         }
@@ -91,12 +94,14 @@ class PresensiGuruController extends Controller
             $rekap = $semuaGuru->map(function ($g) use ($presensiBulanan, $totalHari) {
                 $items = $presensiBulanan->get($g->id, collect());
                 $hadir = $items->count();
+                $terlambat = $items->where('status', 'terlambat')->count();
                 $tidak = $totalHari - $hadir;
                 return [
                     'guru_id' => $g->id,
                     'nama' => $g->nama_lengkap,
                     'total_hadir' => $hadir,
                     'total_tidak' => max(0, $tidak),
+                    'total_terlambat' => $terlambat,
                 ];
             })->sortBy('nama')->values();
         }
@@ -121,6 +126,7 @@ class PresensiGuruController extends Controller
 
         $tanggal = now()->format('Y-m-d');
         $jam = now()->format('H:i:s');
+        $status = $jam <= '07:00:00' ? 'tepat_waktu' : 'terlambat';
 
         $presensi = PresensiGuru::where('guru_id', $request->guru_id)
             ->whereDate('tanggal', $tanggal)
@@ -131,6 +137,7 @@ class PresensiGuruController extends Controller
                 'guru_id' => $request->guru_id,
                 'tanggal' => $tanggal,
                 'jam_masuk' => $jam,
+                'status' => $status,
             ]);
             return back()->with('success', 'Jam masuk tercatat.');
         }
@@ -141,6 +148,30 @@ class PresensiGuruController extends Controller
         }
 
         return back()->with('error', 'Presensi hari ini sudah lengkap.');
+    }
+
+    public function batalkanMasuk($id)
+    {
+        $presensi = PresensiGuru::findOrFail($id);
+
+        if ($presensi->jam_pulang) {
+            return back()->with('error', 'Tidak bisa membatalkan jam masuk karena jam pulang sudah tercatat.');
+        }
+
+        $presensi->delete();
+        return back()->with('success', 'Jam masuk dibatalkan.');
+    }
+
+    public function batalkanPulang($id)
+    {
+        $presensi = PresensiGuru::findOrFail($id);
+
+        if (!$presensi->jam_pulang) {
+            return back()->with('error', 'Jam pulang belum tercatat.');
+        }
+
+        $presensi->update(['jam_pulang' => null]);
+        return back()->with('success', 'Jam pulang dibatalkan.');
     }
 
     public function destroy($id)
