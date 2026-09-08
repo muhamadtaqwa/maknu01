@@ -17,7 +17,8 @@ export default function Index() {
     const isAdmin = user.role === "admin";
     const isGuru = user.role === "guru";
     const isSiswa = user.role === "siswa";
-    const profil = user.guru || user.siswa;
+    const guruId = user.guru?.id;
+    const nisSiswa = user.siswa?.nis;
 
     useEffect(() => {
         return () => {
@@ -25,6 +26,17 @@ export default function Index() {
                 scannerRef.current.stop().catch(() => {});
             }
         };
+    }, []);
+
+    // Auto start kamera saat halaman dibuka
+    useEffect(() => {
+        if (!isAdmin && !presensiHariIni) {
+            startScan();
+        }
+        // Untuk guru yang sudah masuk tapi belum pulang
+        if (isGuru && presensiHariIni && !presensiHariIni.jam_pulang) {
+            startScan();
+        }
     }, []);
 
     const playBeep = () => {
@@ -49,12 +61,33 @@ export default function Index() {
     };
 
     const kirimPresensi = (kode) => {
+        // Validasi kode QR
+        if (isGuru && kode !== "ruang-guru") {
+            toast.error("QR tidak valid. Scan QR di ruang guru.");
+            return;
+        }
+
+        if (isSiswa && kode !== "kelas") {
+            toast.error("QR tidak valid. Scan QR di kelas.");
+            return;
+        }
+
+        if (isGuru && !guruId) {
+            toast.error("Data guru tidak ditemukan.");
+            return;
+        }
+
+        if (isSiswa && !nisSiswa) {
+            toast.error("Data siswa tidak ditemukan.");
+            return;
+        }
+
         setSending(true);
 
         if (isGuru) {
             router.post(
                 "/presensi-guru",
-                { guru_id: profil?.id },
+                { guru_id: guruId },
                 {
                     onSuccess: () => {
                         playBeep();
@@ -70,7 +103,7 @@ export default function Index() {
         } else if (isSiswa) {
             router.post(
                 "/presensi-siswa",
-                { nis: profil?.nis },
+                { nis: nisSiswa },
                 {
                     onSuccess: () => {
                         playBeep();
@@ -87,6 +120,7 @@ export default function Index() {
     };
 
     const startScan = async () => {
+        if (scannerRef.current) return;
         setScanning(true);
         try {
             const scanner = new Html5Qrcode("reader");
@@ -96,6 +130,7 @@ export default function Index() {
                 { fps: 10, qrbox: 250 },
                 (decodedText) => {
                     scanner.stop();
+                    scannerRef.current = null;
                     setScanning(false);
                     kirimPresensi(decodedText);
                 },
@@ -103,6 +138,7 @@ export default function Index() {
             );
         } catch (err) {
             console.error(err);
+            scannerRef.current = null;
             setScanning(false);
         }
     };
@@ -178,13 +214,20 @@ export default function Index() {
         }
     };
 
+    // Cek apakah kamera perlu ditampilkan
+    const tampilkanKamera = () => {
+        if (isGuru) {
+            return !presensiHariIni || !presensiHariIni.jam_pulang;
+        }
+        if (isSiswa) {
+            return !presensiHariIni;
+        }
+        return false;
+    };
+
     return (
         <AppLayout>
             <div className="max-w-md mx-auto text-center">
-                <h2 className="text-lg font-bold text-slate-800 mb-6">
-                    {isAdmin ? "QR Presensi" : "Scan Presensi"}
-                </h2>
-
                 {isAdmin ? (
                     <>
                         {/* Tab QR Guru & QR Siswa */}
@@ -264,70 +307,96 @@ export default function Index() {
                             </h3>
                             {presensiHariIni ? (
                                 <div className="space-y-2">
-                                    <p className="text-sm text-emerald-600 font-semibold">
-                                        ✅ Sudah presensi
-                                    </p>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-500">
+                                            Status
+                                        </span>
+                                        <span className="text-sm text-emerald-600 font-semibold">
+                                            Sudah Presensi
+                                        </span>
+                                    </div>
                                     {isGuru && (
                                         <>
-                                            <p className="text-xs text-slate-500">
-                                                Masuk:{" "}
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-slate-500">
+                                                    Jam Masuk
+                                                </span>
+                                                <span className="text-sm font-medium text-slate-700">
+                                                    {presensiHariIni.jam_masuk?.slice(
+                                                        0,
+                                                        5,
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-slate-500">
+                                                    Jam Pulang
+                                                </span>
+                                                <span className="text-sm font-medium text-slate-700">
+                                                    {presensiHariIni.jam_pulang?.slice(
+                                                        0,
+                                                        5,
+                                                    ) || "-"}
+                                                </span>
+                                            </div>
+                                        </>
+                                    )}
+                                    {isSiswa && (
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs text-slate-500">
+                                                Jam Masuk
+                                            </span>
+                                            <span className="text-sm font-medium text-slate-700">
                                                 {presensiHariIni.jam_masuk?.slice(
                                                     0,
                                                     5,
                                                 )}
-                                            </p>
-                                            <p className="text-xs text-slate-500">
-                                                Pulang:{" "}
-                                                {presensiHariIni.jam_pulang?.slice(
-                                                    0,
-                                                    5,
-                                                ) || "-"}
-                                            </p>
-                                        </>
-                                    )}
-                                    {isSiswa && (
-                                        <p className="text-xs text-slate-500">
-                                            Jam:{" "}
-                                            {presensiHariIni.jam_masuk?.slice(
-                                                0,
-                                                5,
-                                            )}
-                                        </p>
+                                            </span>
+                                        </div>
                                     )}
                                     <button
                                         onClick={handleBatalkan}
-                                        className="mt-2 bg-red-50 text-red-500 px-4 py-2 rounded-full text-xs font-semibold hover:bg-red-100 transition"
+                                        className="mt-2 w-full bg-red-50 text-red-500 px-4 py-2 rounded-full text-xs font-semibold hover:bg-red-100 transition"
                                     >
                                         Batalkan Presensi
                                     </button>
                                 </div>
                             ) : (
-                                <p className="text-sm text-slate-400">
-                                    Belum presensi hari ini
-                                </p>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-slate-500">
+                                        Status
+                                    </span>
+                                    <span className="text-sm text-slate-400">
+                                        Belum Presensi
+                                    </span>
+                                </div>
                             )}
                         </div>
 
                         {/* Scanner */}
-                        <div
-                            id="reader"
-                            className="mx-auto rounded-2xl overflow-hidden shadow-2xl mb-4"
-                        ></div>
-                        {!scanning ? (
-                            <button
-                                onClick={startScan}
-                                disabled={sending}
-                                className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-8 py-4 rounded-full text-base font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
-                            >
-                                Mulai Scan
-                            </button>
-                        ) : (
-                            <button
-                                onClick={stopScan}
-                                className="bg-red-500 text-white px-8 py-4 rounded-full text-base font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all"
-                            >
-                                Berhenti
-                            </button>
+                        {tampilkanKamera() && (
+                            <>
+                                <div
+                                    id="reader"
+                                    className="mx-auto rounded-2xl overflow-hidden shadow-2xl mb-4"
+                                ></div>
+                                {!scanning ? (
+                                    <button
+                                        onClick={startScan}
+                                        disabled={sending}
+                                        className="bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white px-8 py-4 rounded-full text-base font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                                    >
+                                        Aktifkan Kamera
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={stopScan}
+                                        className="bg-red-500 text-white px-8 py-4 rounded-full text-base font-semibold shadow-xl hover:scale-105 active:scale-95 transition-all"
+                                    >
+                                        Berhenti
+                                    </button>
+                                )}
+                            </>
                         )}
 
                         <p className="text-xs text-slate-400 mt-6">

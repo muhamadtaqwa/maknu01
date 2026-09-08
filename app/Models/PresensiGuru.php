@@ -8,10 +8,10 @@ class PresensiGuru extends Model
 {
     protected $table = 'presensi_guru';
 
-    protected $fillable = ['niu', 'tanggal', 'status', 'honor', 'nip', 'keterangan'];
+    protected $fillable = ['guru_id', 'tanggal', 'jam_masuk', 'jam_pulang'];
 
     public function guru()
     {
-        return $this->belongsTo(Guru::class, 'niu', 'niu');
+        return $this->belongsTo(Guru::class);
     }
 }

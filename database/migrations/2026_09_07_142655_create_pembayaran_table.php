@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('nominal');
             $table->enum('status_verifikasi', ['menunggu', 'dicicil', 'lunas'])->default('menunggu');
             $table->date('tgl_jatuh_tempo')->nullable();
-            $table->date('tgl_bayar')->nullable();
             $table->timestamps();
         });
     }

@@ -8,7 +8,7 @@ class PembayaranDetail extends Model
 {
     protected $table = 'pembayaran_detail';
 
-    protected $fillable = ['pembayaran_id', 'nominal', 'tgl_bayar', 'nip'];
+    protected $fillable = ['pembayaran_id', 'nominal', 'tgl_bayar'];
 
     public function pembayaran()
     {

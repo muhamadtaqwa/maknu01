@@ -14,10 +14,7 @@ class Pembayaran extends Model
         'nama_pembayaran',
         'nominal',
         'status_verifikasi',
-        'bukti',
         'tgl_jatuh_tempo',
-        'tgl_bayar',
-        'nip',
     ];
 
     protected $appends = ['total_dibayar', 'sisa', 'status'];
@@ -45,7 +42,6 @@ class Pembayaran extends Model
     public function getStatusAttribute()
     {
         if ($this->status_verifikasi === 'lunas') return 'lunas';
-        if ($this->status_verifikasi === 'ditolak') return 'ditolak';
         if ($this->total_dibayar > 0) return 'dicicil';
         return 'menunggu';
     }
