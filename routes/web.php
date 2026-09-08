@@ -7,6 +7,7 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PresensiGuruController;
 use App\Http\Controllers\PresensiSiswaController;
+use App\Http\Controllers\QRController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimelineController;
@@ -54,6 +55,10 @@ Route::middleware('auth')->group(function () {
     // Presensi Siswa
     Route::get('/presensi-siswa', [PresensiSiswaController::class, 'index']);
     Route::post('/presensi-siswa', [PresensiSiswaController::class, 'store']);
+    Route::delete('/presensi-siswa/{id}', [PresensiSiswaController::class, 'destroy']);
+
+    // QR
+    Route::get('/qr', [QRController::class, 'index']);
 
     // Rekap
     Route::get('/rekap', [RekapController::class, 'index']);
@@ -66,9 +71,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'edit']);
     Route::put('/profil', [ProfileController::class, 'update']);
     Route::post('/profil/ganti-password', [ProfileController::class, 'gantiPassword']);
-
-    // QR
-    Route::get('/qr', fn() => inertia('QR/Index'));
 
     // Timeline
     Route::get('/timeline', [TimelineController::class, 'index']);

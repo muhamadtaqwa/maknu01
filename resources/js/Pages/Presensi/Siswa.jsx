@@ -19,53 +19,6 @@ export default function Siswa() {
     const [selectedDate, setSelectedDate] = useState(tanggal);
     const [activeMode, setActiveMode] = useState(mode || "harian");
     const [activeTab, setActiveTab] = useState("hadir");
-    const [nis, setNis] = useState("");
-    const [sending, setSending] = useState(false);
-
-    const playBeep = () => {
-        try {
-            const ctx = new (
-                window.AudioContext || window.webkitAudioContext
-            )();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = 1200;
-            gain.gain.value = 0.1;
-            osc.start();
-            setTimeout(() => {
-                osc.stop();
-                ctx.close();
-            }, 300);
-        } catch (e) {
-            console.log("Audio tidak didukung");
-        }
-    };
-
-    const handleScan = (nisTerbaca) => {
-        setSending(true);
-        router.post(
-            "/presensi-siswa",
-            { nis: nisTerbaca },
-            {
-                onSuccess: () => {
-                    playBeep();
-                    toast.success("Presensi berhasil!");
-                    setNis("");
-                    setSending(false);
-                },
-                onError: (errors) => {
-                    toast.error(
-                        errors?.error ||
-                            "Siswa sudah presensi atau data tidak ditemukan.",
-                    );
-                    setNis("");
-                    setSending(false);
-                },
-            },
-        );
-    };
 
     const handleDateChange = (e) => {
         setSelectedDate(e.target.value);
@@ -99,6 +52,14 @@ export default function Siswa() {
             { mode: "bulanan", bulan, tahun: e.target.value },
             { preserveState: true },
         );
+    };
+
+    const handleBatalkan = (id) => {
+        if (!confirm("Batalkan presensi ini?")) return;
+        router.delete(`/presensi-siswa/${id}`, {
+            onSuccess: () => toast.success("Presensi dibatalkan."),
+            onError: () => toast.error("Gagal membatalkan."),
+        });
     };
 
     const formatJam = (jam) => jam?.slice(0, 5);
@@ -175,7 +136,7 @@ export default function Siswa() {
                                 )}
                                 {hadir.map((p) => (
                                     <div
-                                        key={p.nis}
+                                        key={p.id}
                                         className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"
                                     >
                                         <div className="flex items-center justify-between">
@@ -192,9 +153,21 @@ export default function Siswa() {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <p className="text-xs font-mono text-slate-400">
-                                                {formatJam(p.jam_masuk)}
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-xs font-mono text-slate-400">
+                                                    {formatJam(p.jam_masuk)}
+                                                </p>
+                                                {isAdmin && (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleBatalkan(p.id)
+                                                        }
+                                                        className="text-[10px] text-red-400 hover:text-red-600"
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { usePage, router } from "@inertiajs/react";
+import toast from "react-hot-toast";
 import AppLayout from "@/Layouts/AppLayout";
 
 export default function Guru() {
@@ -51,6 +52,14 @@ export default function Guru() {
             { mode: "bulanan", bulan, tahun: e.target.value },
             { preserveState: true },
         );
+    };
+
+    const handleBatalkan = (id) => {
+        if (!confirm("Batalkan presensi ini?")) return;
+        router.delete(`/presensi-guru/${id}`, {
+            onSuccess: () => toast.success("Presensi dibatalkan."),
+            onError: () => toast.error("Gagal membatalkan."),
+        });
     };
 
     const formatJam = (jam) => jam?.slice(0, 5);
@@ -127,7 +136,7 @@ export default function Guru() {
                                 )}
                                 {hadir.map((p) => (
                                     <div
-                                        key={p.guru_id}
+                                        key={p.id}
                                         className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"
                                     >
                                         <div className="flex items-center justify-between">
@@ -141,16 +150,29 @@ export default function Guru() {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-xs font-mono text-slate-400">
-                                                    Masuk:{" "}
-                                                    {formatJam(p.jam_masuk)}
-                                                </p>
-                                                <p className="text-xs font-mono text-slate-400">
-                                                    Pulang:{" "}
-                                                    {formatJam(p.jam_pulang) ||
-                                                        "-"}
-                                                </p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="text-right">
+                                                    <p className="text-xs font-mono text-slate-400">
+                                                        Masuk:{" "}
+                                                        {formatJam(p.jam_masuk)}
+                                                    </p>
+                                                    <p className="text-xs font-mono text-slate-400">
+                                                        Pulang:{" "}
+                                                        {formatJam(
+                                                            p.jam_pulang,
+                                                        ) || "-"}
+                                                    </p>
+                                                </div>
+                                                {isAdmin && (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleBatalkan(p.id)
+                                                        }
+                                                        className="text-[10px] text-red-400 hover:text-red-600"
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

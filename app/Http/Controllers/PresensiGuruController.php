@@ -30,6 +30,7 @@ class PresensiGuruController extends Controller
         if ($mode === 'harian') {
             $hadir = $presensi->map(function ($p) {
                 return [
+                    'id' => $p->id,
                     'guru_id' => $p->guru_id,
                     'nama' => $p->guru->nama_lengkap ?? '-',
                     'jam_masuk' => $p->jam_masuk,
@@ -126,7 +127,6 @@ class PresensiGuruController extends Controller
             ->first();
 
         if (!$presensi) {
-            // Scan pertama = jam masuk
             PresensiGuru::create([
                 'guru_id' => $request->guru_id,
                 'tanggal' => $tanggal,
@@ -136,7 +136,6 @@ class PresensiGuruController extends Controller
         }
 
         if ($presensi->jam_masuk && !$presensi->jam_pulang) {
-            // Scan kedua = jam pulang
             $presensi->update(['jam_pulang' => $jam]);
             return back()->with('success', 'Jam pulang tercatat.');
         }
@@ -146,7 +145,8 @@ class PresensiGuruController extends Controller
 
     public function destroy($id)
     {
-        PresensiGuru::findOrFail($id)->delete();
-        return back()->with('success', 'Presensi dihapus.');
+        $presensi = PresensiGuru::findOrFail($id);
+        $presensi->delete();
+        return back()->with('success', 'Presensi dibatalkan.');
     }
 }

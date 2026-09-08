@@ -30,6 +30,7 @@ class PresensiSiswaController extends Controller
         if ($mode === 'harian') {
             $hadir = $presensi->map(function ($p) {
                 return [
+                    'id' => $p->id,
                     'nis' => $p->nis,
                     'nama' => $p->siswa->nama_lengkap ?? '-',
                     'jam_masuk' => $p->jam_masuk,
@@ -132,5 +133,12 @@ class PresensiSiswaController extends Controller
         ]);
 
         return back()->with('success', 'Presensi siswa berhasil.');
+    }
+
+    public function destroy($id)
+    {
+        $presensi = PresensiSiswa::findOrFail($id);
+        $presensi->delete();
+        return back()->with('success', 'Presensi dibatalkan.');
     }
 }
