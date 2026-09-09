@@ -40,7 +40,6 @@ export default function Index() {
     const { data, setData, post, put, reset, processing } = useForm({
         nis: "",
         jenis_kelamin: "",
-        nisn: "",
         nik: "",
         nama_lengkap: "",
         tempat_lahir: "",
@@ -51,6 +50,7 @@ export default function Index() {
         kabupaten: "",
         provinsi: "",
         program_studi: "",
+        kelas: "",
         angkatan: "",
         tahun_masuk: "",
         nomor_hp: "",
@@ -128,7 +128,6 @@ export default function Index() {
         setData({
             nis: siswa.nis || "",
             jenis_kelamin: siswa.jenis_kelamin || "",
-            nisn: siswa.nisn || "",
             nik: siswa.nik || "",
             nama_lengkap: siswa.nama_lengkap,
             tempat_lahir: siswa.tempat_lahir || "",
@@ -139,6 +138,7 @@ export default function Index() {
             kabupaten: siswa.kabupaten || "",
             provinsi: siswa.provinsi || "",
             program_studi: siswa.program_studi || "",
+            kelas: siswa.kelas || "",
             angkatan: siswa.angkatan || "",
             tahun_masuk: siswa.tahun_masuk || "",
             nomor_hp: siswa.nomor_hp || "",
@@ -274,8 +274,8 @@ export default function Index() {
                                 {siswa.nama_lengkap}
                             </h3>
                             <div className="text-[11px] text-slate-500 space-y-0.5">
-                                {siswa.nisn && (
-                                    <Row label="NISN" value={siswa.nisn} />
+                                {siswa.kelas && (
+                                    <Row label="Kelas" value={siswa.kelas} />
                                 )}
                                 {siswa.nik && (
                                     <div className="flex justify-between">
@@ -419,15 +419,6 @@ export default function Index() {
                                             className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
                                             required
                                             disabled={!!editData}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="NISN"
-                                            value={data.nisn}
-                                            onChange={(e) =>
-                                                setData("nisn", e.target.value)
-                                            }
-                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
                                         />
                                         <input
                                             type="text"
@@ -606,6 +597,15 @@ export default function Index() {
                                                 </option>
                                             ))}
                                         </select>
+                                        <input
+                                            type="text"
+                                            placeholder="Kelas"
+                                            value={data.kelas}
+                                            onChange={(e) =>
+                                                setData("kelas", e.target.value)
+                                            }
+                                            className="w-full border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none"
+                                        />
                                         <input
                                             type="text"
                                             placeholder="Angkatan"

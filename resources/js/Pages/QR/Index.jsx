@@ -5,12 +5,33 @@ import { usePage, router } from "@inertiajs/react";
 import toast from "react-hot-toast";
 import AppLayout from "@/Layouts/AppLayout";
 
+const SEKOLAH_LAT = -7.011283;
+const SEKOLAH_LON = 110.295949;
+const RADIUS_MAX = 40; // meter
+
+function hitungJarak(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const rad = (x) => (x * Math.PI) / 180;
+    const dLat = rad(lat2 - lat1);
+    const dLon = rad(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(rad(lat1)) *
+            Math.cos(rad(lat2)) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
 export default function Index() {
     const { auth, presensiHariIni } = usePage().props;
     const user = auth.user;
     const [scanning, setScanning] = useState(false);
     const [sending, setSending] = useState(false);
     const [activeTab, setActiveTab] = useState("guru");
+    const [jarak, setJarak] = useState(null);
+    const [lokasiError, setLokasiError] = useState("");
     const scannerRef = useRef(null);
     const qrRef = useRef(null);
 
@@ -28,12 +49,33 @@ export default function Index() {
         };
     }, []);
 
+    // Ambil lokasi user
+    useEffect(() => {
+        if (!isAdmin && "geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const jarakMeter = hitungJarak(
+                        pos.coords.latitude,
+                        pos.coords.longitude,
+                        SEKOLAH_LAT,
+                        SEKOLAH_LON,
+                    );
+                    setJarak(jarakMeter);
+                    setLokasiError("");
+                },
+                (err) => {
+                    setLokasiError("Lokasi tidak diizinkan. Aktifkan GPS.");
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 },
+            );
+        }
+    }, []);
+
     // Auto start kamera saat halaman dibuka
     useEffect(() => {
         if (!isAdmin && !presensiHariIni) {
             startScan();
         }
-        // Untuk guru yang sudah masuk tapi belum pulang
         if (isGuru && presensiHariIni && !presensiHariIni.jam_pulang) {
             startScan();
         }
@@ -79,6 +121,17 @@ export default function Index() {
 
         if (isSiswa && !nisSiswa) {
             toast.error("Data siswa tidak ditemukan.");
+            return;
+        }
+
+        // Validasi radius
+        if (jarak === null) {
+            toast.error("Lokasi belum didapatkan. Tunggu sebentar.");
+            return;
+        }
+
+        if (jarak > RADIUS_MAX) {
+            toast.error(`Anda di luar radius ${RADIUS_MAX}m dari sekolah.`);
             return;
         }
 
@@ -227,7 +280,6 @@ export default function Index() {
         }
     };
 
-    // Cek apakah kamera perlu ditampilkan
     const tampilkanKamera = () => {
         if (isGuru) {
             return !presensiHariIni || !presensiHariIni.jam_pulang;
@@ -238,7 +290,6 @@ export default function Index() {
         return false;
     };
 
-    // Warna status
     const getStatusColor = () => {
         if (!presensiHariIni) return "text-red-500";
         if (isGuru && !presensiHariIni.jam_pulang) return "text-amber-500";
@@ -359,6 +410,21 @@ export default function Index() {
                                                 : "Tepat Waktu"}
                                         </span>
                                     </div>
+                                )}
+                                {jarak !== null && (
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-500">
+                                            Jarak
+                                        </span>
+                                        <span className="text-sm font-medium text-slate-700">
+                                            {jarak.toFixed(0)} Meter
+                                        </span>
+                                    </div>
+                                )}
+                                {lokasiError && (
+                                    <p className="text-xs text-red-500">
+                                        {lokasiError}
+                                    </p>
                                 )}
                                 {isGuru && presensiHariIni && (
                                     <>

@@ -20,7 +20,8 @@ class SiswaController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
                     ->orWhere('nis', 'like', "%{$search}%")
-                    ->orWhere('nik', 'like', "%{$search}%");
+                    ->orWhere('nik', 'like', "%{$search}%")
+                    ->orWhere('kelas', 'like', "%{$search}%");
             });
         }
 
@@ -37,7 +38,6 @@ class SiswaController extends Controller
         $request->validate([
             'nis' => 'required|unique:siswas,nis',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
-            'nisn' => 'nullable',
             'nik' => 'nullable',
             'nama_lengkap' => 'required',
             'tempat_lahir' => 'nullable',
@@ -48,6 +48,7 @@ class SiswaController extends Controller
             'kabupaten' => 'nullable',
             'provinsi' => 'nullable',
             'program_studi' => 'nullable',
+            'kelas' => 'nullable',
             'angkatan' => 'nullable',
             'tahun_masuk' => 'nullable',
             'nomor_hp' => 'nullable',
@@ -72,7 +73,6 @@ class SiswaController extends Controller
         Siswa::create([
             'user_id' => $user->id,
             'nis' => $request->nis,
-            'nisn' => $request->nisn,
             'nik' => $request->nik,
             'nama_lengkap' => $request->nama_lengkap,
             'tempat_lahir' => $request->tempat_lahir,
@@ -84,6 +84,7 @@ class SiswaController extends Controller
             'kabupaten' => $request->kabupaten,
             'provinsi' => $request->provinsi,
             'program_studi' => $request->program_studi,
+            'kelas' => $request->kelas,
             'angkatan' => $request->angkatan,
             'tahun_masuk' => $request->tahun_masuk,
             'nomor_hp' => $request->nomor_hp,
@@ -105,7 +106,6 @@ class SiswaController extends Controller
         $siswa = Siswa::findOrFail($id);
 
         $request->validate([
-            'nisn' => 'nullable',
             'nik' => 'nullable',
             'nama_lengkap' => 'required',
             'tempat_lahir' => 'nullable',
@@ -117,6 +117,7 @@ class SiswaController extends Controller
             'kabupaten' => 'nullable',
             'provinsi' => 'nullable',
             'program_studi' => 'nullable',
+            'kelas' => 'nullable',
             'angkatan' => 'nullable',
             'tahun_masuk' => 'nullable',
             'nomor_hp' => 'nullable',
@@ -131,7 +132,6 @@ class SiswaController extends Controller
         ]);
 
         $siswa->update($request->only([
-            'nisn',
             'nik',
             'nama_lengkap',
             'tempat_lahir',
@@ -143,6 +143,7 @@ class SiswaController extends Controller
             'kabupaten',
             'provinsi',
             'program_studi',
+            'kelas',
             'angkatan',
             'tahun_masuk',
             'nomor_hp',
