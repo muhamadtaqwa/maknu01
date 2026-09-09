@@ -4,6 +4,8 @@ import { usePage } from "@inertiajs/react";
 import {
     BarChart,
     Bar,
+    AreaChart,
+    Area,
     XAxis,
     CartesianGrid,
     Tooltip,
@@ -12,11 +14,24 @@ import {
 } from "recharts";
 
 export default function Dashboard() {
-    const { auth, stats, aktivitas, presensiSiswa, grafikPresensi } =
-        usePage().props;
+    const {
+        auth,
+        stats,
+        aktivitas,
+        presensiSiswa,
+        presensiGuruBulanan,
+        grafikPresensi,
+        grafikPresensiSiswaUser,
+        grafikSiswaAdmin,
+        grafikGuruAdmin,
+    } = usePage().props;
     const user = auth.user;
     const [time, setTime] = useState(new Date());
     const [hijri, setHijri] = useState("");
+    const dataDenganNol = [
+        { hari: "", hadir: 0, tidak: 0 },
+        ...grafikGuruAdmin,
+    ];
 
     const nama =
         user.role === "admin"
@@ -163,6 +178,117 @@ export default function Dashboard() {
                             </div>
                         </div>
 
+                        {/* Grafik Kehadiran - Desktop sejajar */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Grafik Siswa - Bar Chart */}
+                            <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
+                                <h2 className="text-sm font-bold text-slate-700 mb-2">
+                                    Kehadiran Siswa Minggu Ini
+                                </h2>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <BarChart data={grafikSiswaAdmin}>
+                                        <CartesianGrid
+                                            strokeDasharray="3 3"
+                                            stroke="#e2e8f0"
+                                        />
+                                        <XAxis
+                                            dataKey="hari"
+                                            tick={{ fontSize: 11 }}
+                                        />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar
+                                            dataKey="hadir"
+                                            fill="#10b981"
+                                            radius={[4, 4, 0, 0]}
+                                        />
+                                        <Bar
+                                            dataKey="tidak"
+                                            fill="#ef4444"
+                                            radius={[4, 4, 0, 0]}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                            {/* Grafik Guru - Area Chart Model Saham */}
+                            <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
+                                <h2 className="text-sm font-bold text-slate-700 mb-2">
+                                    Kehadiran Guru Minggu Ini
+                                </h2>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <AreaChart data={dataDenganNol}>
+                                        <defs>
+                                            <linearGradient
+                                                id="gradientHadir"
+                                                x1="0"
+                                                y1="0"
+                                                x2="0"
+                                                y2="1"
+                                            >
+                                                <stop
+                                                    offset="5%"
+                                                    stopColor="#009788"
+                                                    stopOpacity={0.3}
+                                                />
+                                                <stop
+                                                    offset="95%"
+                                                    stopColor="#009788"
+                                                    stopOpacity={0}
+                                                />
+                                            </linearGradient>
+                                            <linearGradient
+                                                id="gradientTidak"
+                                                x1="0"
+                                                y1="0"
+                                                x2="0"
+                                                y2="1"
+                                            >
+                                                <stop
+                                                    offset="5%"
+                                                    stopColor="#f97316"
+                                                    stopOpacity={0.3}
+                                                />
+                                                <stop
+                                                    offset="95%"
+                                                    stopColor="#f97316"
+                                                    stopOpacity={0}
+                                                />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid
+                                            strokeDasharray="3 3"
+                                            stroke="#e2e8f0"
+                                            vertical={false}
+                                        />
+                                        <XAxis
+                                            dataKey="hari"
+                                            tick={{ fontSize: 10 }}
+                                            tickFormatter={(hari) =>
+                                                hari.slice(0, 3)
+                                            }
+                                        />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="hadir"
+                                            stroke="#009788"
+                                            strokeWidth={2}
+                                            fill="url(#gradientHadir)"
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="tidak"
+                                            stroke="#f97316"
+                                            strokeWidth={2}
+                                            fill="url(#gradientTidak)"
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
                         <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-2">
                                 Aktivitas Terbaru
@@ -196,7 +322,6 @@ export default function Dashboard() {
                 {/* ========== GURU ========== */}
                 {user.role === "guru" && (
                     <>
-                        {/* Info pribadi */}
                         <div className="grid grid-cols-2 gap-2">
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
@@ -219,7 +344,6 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Statistik */}
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <div className="rounded-2xl border border-teal-100 bg-white p-3 shadow-sm">
                                 <p className="text-[11px] text-slate-400">
@@ -255,7 +379,6 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Grafik Presensi */}
                         <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-2">
                                 Presensi Siswa Minggu Ini
@@ -286,37 +409,13 @@ export default function Dashboard() {
                             </ResponsiveContainer>
                         </div>
 
-                        {/* Menu cepat */}
                         <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
-                            <h2 className="text-sm font-bold text-slate-700 mb-2">
-                                Menu Cepat
+                            <h2 className="text-sm font-bold text-slate-700 mb-3">
+                                Presensi Bulan Ini
                             </h2>
-                            <div className="grid grid-cols-2 gap-2">
-                                <a
-                                    href="/presensi-guru"
-                                    className="rounded-xl bg-[#009788]/10 p-3 text-center text-xs font-medium text-[#009788]"
-                                >
-                                    Presensi Guru
-                                </a>
-                                <a
-                                    href="/presensi-siswa"
-                                    className="rounded-xl bg-emerald-50 p-3 text-center text-xs font-medium text-emerald-600"
-                                >
-                                    Presensi Siswa
-                                </a>
-                                <a
-                                    href="/timeline"
-                                    className="rounded-xl bg-blue-50 p-3 text-center text-xs font-medium text-blue-500"
-                                >
-                                    Timeline
-                                </a>
-                                <a
-                                    href="/qr"
-                                    className="rounded-xl bg-[#009788]/10 p-3 text-center text-xs font-medium text-[#009788]"
-                                >
-                                    QR Code
-                                </a>
-                            </div>
+                            <CalendarPresensi
+                                data={presensiGuruBulanan || []}
+                            />
                         </div>
                     </>
                 )}
@@ -346,7 +445,6 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        {/* Kalender Presensi */}
                         <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-3">
                                 Presensi Bulan Ini
@@ -356,28 +454,32 @@ export default function Dashboard() {
 
                         <div className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm">
                             <h2 className="text-sm font-bold text-slate-700 mb-2">
-                                Menu Cepat
+                                Presensi Minggu Ini
                             </h2>
-                            <div className="grid grid-cols-2 gap-2">
-                                <a
-                                    href="/timeline"
-                                    className="rounded-xl bg-blue-50 p-3 text-center text-xs font-medium text-blue-500"
-                                >
-                                    Timeline
-                                </a>
-                                <a
-                                    href="/qr"
-                                    className="rounded-xl bg-[#009788]/10 p-3 text-center text-xs font-medium text-[#009788]"
-                                >
-                                    QR Code
-                                </a>
-                                <a
-                                    href="/profil"
-                                    className="rounded-xl bg-slate-100 p-3 text-center text-xs font-medium text-slate-600"
-                                >
-                                    Profil
-                                </a>
-                            </div>
+                            <ResponsiveContainer width="100%" height={200}>
+                                <BarChart data={grafikPresensiSiswaUser}>
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        stroke="#e2e8f0"
+                                    />
+                                    <XAxis
+                                        dataKey="hari"
+                                        tick={{ fontSize: 11 }}
+                                    />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar
+                                        dataKey="hadir"
+                                        fill="#10b981"
+                                        radius={[4, 4, 0, 0]}
+                                    />
+                                    <Bar
+                                        dataKey="tidak"
+                                        fill="#ef4444"
+                                        radius={[4, 4, 0, 0]}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
                     </>
                 )}
@@ -434,13 +536,7 @@ function CalendarPresensi({ data }) {
                     return (
                         <div
                             key={i}
-                            className={`h-9 rounded-lg flex items-center justify-center text-xs font-medium ${
-                                hadir
-                                    ? "bg-emerald-500 text-white"
-                                    : isFuture
-                                      ? "bg-white text-slate-300"
-                                      : "bg-slate-100 text-slate-400"
-                            }`}
+                            className={`h-9 rounded-lg flex items-center justify-center text-xs font-medium ${hadir ? "bg-emerald-500 text-white" : isFuture ? "bg-white text-slate-300" : "bg-slate-100 text-slate-400"}`}
                         >
                             {day}
                         </div>

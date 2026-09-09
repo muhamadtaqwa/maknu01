@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Pembayaran;
 use App\Models\Login;
 use App\Models\PresensiSiswa;
+use App\Models\PresensiGuru;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -29,11 +30,48 @@ class DashboardController extends Controller
         $aktivitas = $this->getAktivitas();
 
         $presensiSiswa = [];
+        $presensiGuruBulanan = [];
+        $grafikPresensiSiswaUser = [];
+
         if (auth()->user()->role === 'siswa') {
             $nis = auth()->user()->siswa->nis;
             $presensiSiswa = PresensiSiswa::where('nis', $nis)
                 ->whereMonth('tanggal', $bulanIni)
                 ->whereYear('tanggal', $tahunIni)
+                ->pluck('tanggal')
+                ->toArray();
+
+            // Grafik presensi seluruh siswa
+            $startOfWeek = now()->startOfWeek();
+            $endOfWeek = now()->endOfWeek();
+            $totalSiswaAktif = Siswa::where('status', 'aktif')->count();
+
+            $presensiMingguanSemua = PresensiSiswa::whereBetween('tanggal', [
+                $startOfWeek->format('Y-m-d'),
+                $endOfWeek->format('Y-m-d'),
+            ])->get();
+
+            for ($i = 0; $i < 7; $i++) {
+                $tanggal = $startOfWeek->copy()->addDays($i);
+                $hadir = $presensiMingguanSemua
+                    ->where('tanggal', $tanggal->format('Y-m-d'))
+                    ->count();
+                $tidak = max(0, $totalSiswaAktif - $hadir);
+                $grafikPresensiSiswaUser[] = [
+                    'hari' => $tanggal->locale('id')->dayName,
+                    'hadir' => $hadir,
+                    'tidak' => $tidak,
+                ];
+            }
+        }
+
+        if (auth()->user()->role === 'guru') {
+            // Presensi bulanan untuk kalender
+            $presensiGuruBulanan = PresensiGuru::where('guru_id', auth()->user()->guru->id)
+                ->whereMonth('tanggal', $bulanIni)
+                ->whereYear('tanggal', $tahunIni)
+                ->whereNotNull('jam_masuk')
+                ->whereNotNull('jam_pulang')
                 ->pluck('tanggal')
                 ->toArray();
         }
@@ -63,6 +101,53 @@ class DashboardController extends Controller
             }
         }
 
+        // Grafik untuk Admin
+        $grafikSiswaAdmin = [];
+        $grafikGuruAdmin = [];
+        if (auth()->user()->role === 'admin') {
+            $startOfWeek = now()->startOfWeek();
+            $endOfWeek = now()->endOfWeek();
+            $totalSiswaAktif = Siswa::where('status', 'aktif')->count();
+            $totalGuruAktif = Guru::where('status', 'aktif')->count();
+
+            $presensiSiswaMingguan = PresensiSiswa::whereBetween('tanggal', [
+                $startOfWeek->format('Y-m-d'),
+                $endOfWeek->format('Y-m-d'),
+            ])->get();
+
+            $presensiGuruMingguan = PresensiGuru::whereBetween('tanggal', [
+                $startOfWeek->format('Y-m-d'),
+                $endOfWeek->format('Y-m-d'),
+            ])
+                ->whereNotNull('jam_masuk')
+                ->whereNotNull('jam_pulang')
+                ->get();
+
+            for ($i = 0; $i < 7; $i++) {
+                $tanggal = $startOfWeek->copy()->addDays($i);
+
+                $hadirSiswa = $presensiSiswaMingguan
+                    ->where('tanggal', $tanggal->format('Y-m-d'))
+                    ->count();
+                $tidakSiswa = max(0, $totalSiswaAktif - $hadirSiswa);
+                $grafikSiswaAdmin[] = [
+                    'hari' => $tanggal->locale('id')->dayName,
+                    'hadir' => $hadirSiswa,
+                    'tidak' => $tidakSiswa,
+                ];
+
+                $hadirGuru = $presensiGuruMingguan
+                    ->where('tanggal', $tanggal->format('Y-m-d'))
+                    ->count();
+                $tidakGuru = max(0, $totalGuruAktif - $hadirGuru);
+                $grafikGuruAdmin[] = [
+                    'hari' => $tanggal->locale('id')->dayName,
+                    'hadir' => $hadirGuru,
+                    'tidak' => $tidakGuru,
+                ];
+            }
+        }
+
         return Inertia::render('Dashboard', [
             'stats' => [
                 'totalSiswa'       => Siswa::where('status', 'aktif')->count(),
@@ -81,7 +166,11 @@ class DashboardController extends Controller
             ],
             'aktivitas' => $aktivitas,
             'presensiSiswa' => $presensiSiswa,
+            'presensiGuruBulanan' => $presensiGuruBulanan,
+            'grafikPresensiSiswaUser' => $grafikPresensiSiswaUser,
             'grafikPresensi' => $grafikPresensi,
+            'grafikSiswaAdmin' => $grafikSiswaAdmin,
+            'grafikGuruAdmin' => $grafikGuruAdmin,
         ]);
     }
 

@@ -95,7 +95,8 @@ export default function Index() {
     const filtered = gurus.filter(
         (u) =>
             u.nama_lengkap?.toLowerCase().includes(search.toLowerCase()) ||
-            u.nik?.toLowerCase().includes(search.toLowerCase()),
+            u.nik?.toLowerCase().includes(search.toLowerCase()) ||
+            u.user?.username?.toLowerCase().includes(search.toLowerCase()),
     );
 
     const formatTgl = (tgl) => {
@@ -127,7 +128,7 @@ export default function Index() {
                 <div className="mb-4">
                     <input
                         type="text"
-                        placeholder="Cari nama atau NIK..."
+                        placeholder="Cari nama, NIK, atau username..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="w-full border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:border-[#009788] focus:ring-4 focus:ring-teal-100 outline-none"
@@ -180,6 +181,12 @@ export default function Index() {
                                 {u.nama_lengkap}
                             </h3>
                             <div className="text-[11px] text-slate-500 space-y-0.5">
+                                {u.user?.username && (
+                                    <Row
+                                        label="Username"
+                                        value={u.user.username}
+                                    />
+                                )}
                                 {u.nik && (
                                     <div className="flex justify-between">
                                         <span className="text-slate-400">
