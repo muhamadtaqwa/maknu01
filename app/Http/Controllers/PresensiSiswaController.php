@@ -11,17 +11,32 @@ class PresensiSiswaController extends Controller
 {
     public function index(Request $request)
     {
+        $user = $request->user();
+        $isAdmin = $user->role === "admin";
+        $isGuru = $user->role === "guru";
+        $isSiswa = $user->role === "siswa";
+
         $mode = $request->mode ?? 'harian';
         $tanggal = $request->tanggal ?? now()->format('Y-m-d');
         $bulan = $request->bulan ?? now()->month;
         $tahun = $request->tahun ?? now()->year;
 
-        $presensi = PresensiSiswa::with('siswa')
-            ->whereDate('tanggal', $tanggal)
-            ->orderBy('jam_masuk', 'asc')
-            ->get();
-
-        $semuaSiswa = Siswa::where('status', 'aktif')->orderBy('nama_lengkap')->get();
+        // Filter siswa
+        if ($isAdmin || $isGuru) {
+            $semuaSiswa = Siswa::where('status', 'aktif')->orderBy('nama_lengkap')->get();
+            $presensi = PresensiSiswa::with('siswa')
+                ->whereDate('tanggal', $tanggal)
+                ->orderBy('jam_masuk', 'asc')
+                ->get();
+        } else {
+            // Siswa hanya lihat dirinya sendiri
+            $semuaSiswa = Siswa::where('nis', $user->siswa->nis)->get();
+            $presensi = PresensiSiswa::with('siswa')
+                ->where('nis', $user->siswa->nis)
+                ->whereDate('tanggal', $tanggal)
+                ->orderBy('jam_masuk', 'asc')
+                ->get();
+        }
 
         $hadir = [];
         $tidakHadir = [];
@@ -35,6 +50,7 @@ class PresensiSiswaController extends Controller
                     'nama' => $p->siswa->nama_lengkap ?? '-',
                     'jam_masuk' => $p->jam_masuk,
                     'status' => $p->status,
+                    'jarak' => $p->jarak,
                 ];
             });
 
@@ -55,10 +71,14 @@ class PresensiSiswaController extends Controller
             $startOfWeek = now()->startOfWeek()->format('Y-m-d');
             $endOfWeek = now()->endOfWeek()->format('Y-m-d');
 
-            $presensiMingguan = PresensiSiswa::with('siswa')
-                ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
-                ->get()
-                ->groupBy('nis');
+            $query = PresensiSiswa::with('siswa')
+                ->whereBetween('tanggal', [$startOfWeek, $endOfWeek]);
+
+            if ($isSiswa) {
+                $query->where('nis', $user->siswa->nis);
+            }
+
+            $presensiMingguan = $query->get()->groupBy('nis');
 
             $totalHariEfektif = 7;
 
@@ -80,11 +100,15 @@ class PresensiSiswaController extends Controller
         if ($mode === 'bulanan') {
             $totalHari = now()->daysInMonth;
 
-            $presensiBulanan = PresensiSiswa::with('siswa')
+            $query = PresensiSiswa::with('siswa')
                 ->whereMonth('tanggal', $bulan)
-                ->whereYear('tanggal', $tahun)
-                ->get()
-                ->groupBy('nis');
+                ->whereYear('tanggal', $tahun);
+
+            if ($isSiswa) {
+                $query->where('nis', $user->siswa->nis);
+            }
+
+            $presensiBulanan = $query->get()->groupBy('nis');
 
             $rekap = $semuaSiswa->map(function ($s) use ($presensiBulanan, $totalHari) {
                 $items = $presensiBulanan->get($s->nis, collect());
@@ -118,6 +142,7 @@ class PresensiSiswaController extends Controller
     {
         $request->validate([
             'nis' => 'required|exists:siswas,nis',
+            'jarak' => 'nullable|numeric',
         ]);
 
         $tanggal = now()->format('Y-m-d');
@@ -137,6 +162,7 @@ class PresensiSiswaController extends Controller
             'tanggal' => $tanggal,
             'jam_masuk' => $jam,
             'status' => $status,
+            'jarak' => $request->jarak,
         ]);
 
         return back()->with('success', 'Presensi siswa berhasil.');

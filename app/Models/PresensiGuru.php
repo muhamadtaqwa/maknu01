@@ -8,7 +8,7 @@ class PresensiGuru extends Model
 {
     protected $table = 'presensi_guru';
 
-    protected $fillable = ['guru_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status'];
+    protected $fillable = ['guru_id', 'tanggal', 'jam_masuk', 'jam_pulang', 'status', 'jarak'];
 
     public function guru()
     {

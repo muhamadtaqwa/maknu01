@@ -8,7 +8,7 @@ class PresensiSiswa extends Model
 {
     protected $table = 'presensi_siswa';
 
-    protected $fillable = ['nis', 'tanggal', 'jam_masuk', 'status'];
+    protected $fillable = ['nis', 'tanggal', 'jam_masuk', 'status', 'jarak'];
 
     public function siswa()
     {

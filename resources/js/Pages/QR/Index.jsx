@@ -140,7 +140,7 @@ export default function Index() {
         if (isGuru) {
             router.post(
                 "/presensi-guru",
-                { guru_id: guruId },
+                { guru_id: guruId, jarak: jarak.toFixed(2) },
                 {
                     onSuccess: () => {
                         playBeep();
@@ -156,7 +156,7 @@ export default function Index() {
         } else if (isSiswa) {
             router.post(
                 "/presensi-siswa",
-                { nis: nisSiswa },
+                { nis: nisSiswa, jarak: jarak.toFixed(2) },
                 {
                     onSuccess: () => {
                         playBeep();
@@ -310,7 +310,6 @@ export default function Index() {
             <div className="max-w-md mx-auto text-center">
                 {isAdmin ? (
                     <>
-                        {/* Tab QR Guru & QR Siswa */}
                         <div className="flex gap-2 mb-4 bg-slate-100 rounded-full p-1">
                             <button
                                 onClick={() => setActiveTab("guru")}
@@ -380,7 +379,6 @@ export default function Index() {
                     </>
                 ) : (
                     <>
-                        {/* Status Presensi Hari Ini */}
                         <div className="rounded-[30px] border border-teal-100 bg-white p-6 shadow-2xl mb-4">
                             <h3 className="font-semibold text-sm text-slate-700 mb-3">
                                 Status Hari Ini
@@ -500,7 +498,6 @@ export default function Index() {
                             </div>
                         </div>
 
-                        {/* Scanner */}
                         {tampilkanKamera() && (
                             <>
                                 <div

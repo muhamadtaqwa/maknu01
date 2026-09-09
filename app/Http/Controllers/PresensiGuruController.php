@@ -11,17 +11,36 @@ class PresensiGuruController extends Controller
 {
     public function index(Request $request)
     {
+        $user = $request->user();
+        $isAdmin = $user->role === "admin";
+        $isGuru = $user->role === "guru";
+
+        // Cek akses
+        if (!$isAdmin && !$isGuru) {
+            abort(403);
+        }
+
         $mode = $request->mode ?? 'harian';
         $tanggal = $request->tanggal ?? now()->format('Y-m-d');
         $bulan = $request->bulan ?? now()->month;
         $tahun = $request->tahun ?? now()->year;
 
-        $presensi = PresensiGuru::with('guru')
-            ->whereDate('tanggal', $tanggal)
-            ->orderBy('jam_masuk', 'asc')
-            ->get();
-
-        $semuaGuru = Guru::where('status', 'aktif')->orderBy('nama_lengkap')->get();
+        // Filter guru
+        if ($isAdmin) {
+            $semuaGuru = Guru::where('status', 'aktif')->orderBy('nama_lengkap')->get();
+            $presensi = PresensiGuru::with('guru')
+                ->whereDate('tanggal', $tanggal)
+                ->orderBy('jam_masuk', 'asc')
+                ->get();
+        } else {
+            // Guru hanya lihat dirinya sendiri
+            $semuaGuru = Guru::where('id', $user->guru->id)->get();
+            $presensi = PresensiGuru::with('guru')
+                ->where('guru_id', $user->guru->id)
+                ->whereDate('tanggal', $tanggal)
+                ->orderBy('jam_masuk', 'asc')
+                ->get();
+        }
 
         $hadir = [];
         $belumHadir = [];
@@ -36,6 +55,7 @@ class PresensiGuruController extends Controller
                     'jam_masuk' => $p->jam_masuk,
                     'jam_pulang' => $p->jam_pulang,
                     'status' => $p->status,
+                    'jarak' => $p->jarak,
                 ];
             });
 
@@ -56,12 +76,16 @@ class PresensiGuruController extends Controller
             $startOfWeek = now()->startOfWeek()->format('Y-m-d');
             $endOfWeek = now()->endOfWeek()->format('Y-m-d');
 
-            $presensiMingguan = PresensiGuru::with('guru')
+            $query = PresensiGuru::with('guru')
                 ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
                 ->whereNotNull('jam_masuk')
-                ->whereNotNull('jam_pulang')
-                ->get()
-                ->groupBy('guru_id');
+                ->whereNotNull('jam_pulang');
+
+            if (!$isAdmin) {
+                $query->where('guru_id', $user->guru->id);
+            }
+
+            $presensiMingguan = $query->get()->groupBy('guru_id');
 
             $totalHariEfektif = 7;
 
@@ -83,13 +107,17 @@ class PresensiGuruController extends Controller
         if ($mode === 'bulanan') {
             $totalHari = now()->daysInMonth;
 
-            $presensiBulanan = PresensiGuru::with('guru')
+            $query = PresensiGuru::with('guru')
                 ->whereMonth('tanggal', $bulan)
                 ->whereYear('tanggal', $tahun)
                 ->whereNotNull('jam_masuk')
-                ->whereNotNull('jam_pulang')
-                ->get()
-                ->groupBy('guru_id');
+                ->whereNotNull('jam_pulang');
+
+            if (!$isAdmin) {
+                $query->where('guru_id', $user->guru->id);
+            }
+
+            $presensiBulanan = $query->get()->groupBy('guru_id');
 
             $rekap = $semuaGuru->map(function ($g) use ($presensiBulanan, $totalHari) {
                 $items = $presensiBulanan->get($g->id, collect());
@@ -122,6 +150,7 @@ class PresensiGuruController extends Controller
     {
         $request->validate([
             'guru_id' => 'required|exists:gurus,id',
+            'jarak' => 'nullable|numeric',
         ]);
 
         $tanggal = now()->format('Y-m-d');
@@ -138,6 +167,7 @@ class PresensiGuruController extends Controller
                 'tanggal' => $tanggal,
                 'jam_masuk' => $jam,
                 'status' => $status,
+                'jarak' => $request->jarak,
             ]);
             return back()->with('success', 'Jam masuk tercatat.');
         }

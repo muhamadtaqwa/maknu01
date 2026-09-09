@@ -160,13 +160,25 @@ export default function Siswa() {
                                             )}
                                         </div>
 
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-xs text-slate-500">
-                                                Jam Masuk
-                                            </span>
-                                            <span className="text-sm font-medium text-slate-700">
-                                                {formatJam(p.jam_masuk)}
-                                            </span>
+                                        <div className="space-y-1.5">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-slate-500">
+                                                    Jam Masuk
+                                                </span>
+                                                <span className="text-sm font-medium text-slate-700">
+                                                    {formatJam(p.jam_masuk)}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-slate-500">
+                                                    Jarak
+                                                </span>
+                                                <span className="text-sm font-medium text-slate-700">
+                                                    {p.jarak
+                                                        ? `${p.jarak} meter`
+                                                        : "-"}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         {isAdmin && (

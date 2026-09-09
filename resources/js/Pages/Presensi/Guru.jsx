@@ -173,6 +173,16 @@ export default function Guru() {
                                                         "-"}
                                                 </span>
                                             </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs text-slate-500">
+                                                    Jarak
+                                                </span>
+                                                <span className="text-sm font-medium text-slate-700">
+                                                    {p.jarak
+                                                        ? `${p.jarak} meter`
+                                                        : "-"}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         {isAdmin && (
