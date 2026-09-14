@@ -17,6 +17,7 @@ import {
     X,
     PanelLeftClose,
     PanelLeftOpen,
+    FileText,
 } from "lucide-react";
 
 export default function AppLayout({ children }) {
@@ -65,6 +66,12 @@ export default function AppLayout({ children }) {
             roles: ["admin"],
         },
         { label: "Guru", path: "/guru", icon: Users, roles: ["admin"] },
+        {
+            label: "Upload RPP",
+            path: "/rpp",
+            icon: FileText,
+            roles: ["admin", "guru"],
+        },
     ];
 
     const menuKeuangan = [

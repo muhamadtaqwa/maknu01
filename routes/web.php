@@ -11,6 +11,7 @@ use App\Http\Controllers\QRController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TimelineController;
+use App\Http\Controllers\RppController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -68,6 +69,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/rekap/siswa/{nis}', [RekapController::class, 'siswaDetailJson']);
     Route::get('/rekap/spp', [RekapController::class, 'spp']);
     Route::get('/rekap/buku', [RekapController::class, 'buku']);
+
+    // RPP
+    Route::get('/rpp', [RppController::class, 'index']);
+    Route::post('/rpp', [RppController::class, 'store']);
+    Route::put('/rpp/{id}', [RppController::class, 'update']);
+    Route::delete('/rpp/{id}', [RppController::class, 'destroy']);
 
     // Profil
     Route::get('/profil', [ProfileController::class, 'edit']);
