@@ -78,8 +78,7 @@ class PresensiGuruController extends Controller
 
             $query = PresensiGuru::with('guru')
                 ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
-                ->whereNotNull('jam_masuk')
-                ->whereNotNull('jam_pulang');
+                ->whereNotNull('jam_masuk');
 
             if (!$isAdmin) {
                 $query->where('guru_id', $user->guru->id);
@@ -110,8 +109,7 @@ class PresensiGuruController extends Controller
             $query = PresensiGuru::with('guru')
                 ->whereMonth('tanggal', $bulan)
                 ->whereYear('tanggal', $tahun)
-                ->whereNotNull('jam_masuk')
-                ->whereNotNull('jam_pulang');
+                ->whereNotNull('jam_masuk');
 
             if (!$isAdmin) {
                 $query->where('guru_id', $user->guru->id);
@@ -148,8 +146,23 @@ class PresensiGuruController extends Controller
 
     public function store(Request $request)
     {
+        $user = $request->user();
+
+        if ($user->role === 'guru') {
+            $guruId = $user->guru?->id;
+            if (!$guruId) {
+                return back()->with('error', 'Data profil guru tidak ditemukan.');
+            }
+        } elseif ($user->role === 'admin') {
+            $request->validate([
+                'guru_id' => 'required|exists:gurus,id',
+            ]);
+            $guruId = $request->guru_id;
+        } else {
+            abort(403, 'Akses ditolak.');
+        }
+
         $request->validate([
-            'guru_id' => 'required|exists:gurus,id',
             'jarak' => 'nullable|numeric',
         ]);
 
@@ -157,13 +170,13 @@ class PresensiGuruController extends Controller
         $jam = now()->format('H:i:s');
         $status = $jam <= '07:00:00' ? 'tepat_waktu' : 'terlambat';
 
-        $presensi = PresensiGuru::where('guru_id', $request->guru_id)
+        $presensi = PresensiGuru::where('guru_id', $guruId)
             ->whereDate('tanggal', $tanggal)
             ->first();
 
         if (!$presensi) {
             PresensiGuru::create([
-                'guru_id' => $request->guru_id,
+                'guru_id' => $guruId,
                 'tanggal' => $tanggal,
                 'jam_masuk' => $jam,
                 'status' => $status,

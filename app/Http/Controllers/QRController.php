@@ -14,13 +14,13 @@ class QRController extends Controller
         $user = $request->user();
         $presensiHariIni = null;
 
-        if ($user->role === 'guru') {
+        if ($user->role === 'guru' && $user->guru) {
             $presensiHariIni = PresensiGuru::where('guru_id', $user->guru->id)
                 ->whereDate('tanggal', now()->format('Y-m-d'))
                 ->first();
         }
 
-        if ($user->role === 'siswa') {
+        if ($user->role === 'siswa' && $user->siswa) {
             $presensiHariIni = PresensiSiswa::where('nis', $user->siswa->nis)
                 ->whereDate('tanggal', now()->format('Y-m-d'))
                 ->first();

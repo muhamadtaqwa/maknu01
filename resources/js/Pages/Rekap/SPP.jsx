@@ -7,7 +7,7 @@ export default function SPP() {
     const menu = [
         {
             label: "Siswa",
-            path: "/rekap/santri",
+            path: "/rekap/siswa",
             bg: "bg-[#009788]/10",
             text: "text-[#009788]",
         },
@@ -19,7 +19,7 @@ export default function SPP() {
         },
         {
             label: "Buku",
-            path: "/rekap/kitab",
+            path: "/rekap/buku",
             bg: "bg-orange-50",
             text: "text-orange-600",
         },

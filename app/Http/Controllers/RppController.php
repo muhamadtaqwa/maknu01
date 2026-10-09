@@ -24,7 +24,7 @@ class RppController extends Controller
             'gurus' => $gurus,
             'isAdmin' => $isAdmin,
             'isGuru' => $isGuru,
-            'myGuruId' => $isGuru ? $user->guru->id : null,
+            'myGuruId' => $isGuru ? $user->guru?->id : null,
         ]);
     }
 
@@ -53,7 +53,7 @@ class RppController extends Controller
         $user = auth()->user();
 
         // Cek akses
-        if ($user->role !== 'admin' && $user->guru->id !== $rpp->guru_id) {
+        if ($user->role !== 'admin' && $user->guru?->id !== $rpp->guru_id) {
             return back()->with('error', 'Anda tidak berhak mengedit RPP ini.');
         }
 
@@ -84,7 +84,7 @@ class RppController extends Controller
         $user = auth()->user();
 
         // Cek akses
-        if ($user->role !== 'admin' && $user->guru->id !== $rpp->guru_id) {
+        if ($user->role !== 'admin' && $user->guru?->id !== $rpp->guru_id) {
             return back()->with('error', 'Anda tidak berhak menghapus RPP ini.');
         }
 

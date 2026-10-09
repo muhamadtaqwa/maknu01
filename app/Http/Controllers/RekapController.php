@@ -9,8 +9,17 @@ use Inertia\Inertia;
 
 class RekapController extends Controller
 {
-    public function index()
+    private function checkAdmin(Request $request)
     {
+        if ($request->user()->role !== 'admin') {
+            abort(403, 'Hanya admin yang memiliki hak akses ke rekap keuangan.');
+        }
+    }
+
+    public function index(Request $request)
+    {
+        $this->checkAdmin($request);
+
         $rekap = Pembayaran::all()->groupBy('jenis')->map(function ($items) {
             $total = $items->sum('nominal');
             $dibayar = $items->sum('total_dibayar');
@@ -36,6 +45,8 @@ class RekapController extends Controller
 
     public function siswa(Request $request)
     {
+        $this->checkAdmin($request);
+
         $query = Siswa::orderBy('nis');
 
         // Search
@@ -55,9 +66,20 @@ class RekapController extends Controller
         ]);
     }
 
-    public function siswaDetailJson($nis)
+    public function siswaDetailJson(Request $request, $nis)
     {
-        $siswa = Siswa::where('nis', $nis)->first();
+        $user = $request->user();
+
+        // Jika siswa, hanya boleh melihat datanya sendiri
+        if ($user->role === 'siswa') {
+            if ($user->siswa?->nis !== $nis) {
+                abort(403, 'Anda hanya dapat melihat data rekap Anda sendiri.');
+            }
+        } elseif ($user->role !== 'admin') {
+            abort(403, 'Hanya admin yang memiliki hak akses.');
+        }
+
+        $siswa = Siswa::where('nis', $nis)->firstOrFail();
         $rekap = Pembayaran::where('nis', $nis)->get()->groupBy('jenis')->map(function ($items) {
             $total = $items->sum('nominal');
             $dibayar = $items->sum('total_dibayar');
@@ -74,8 +96,10 @@ class RekapController extends Controller
         return response()->json(['siswa' => $siswa, 'rekap' => $rekap]);
     }
 
-    public function spp()
+    public function spp(Request $request)
     {
+        $this->checkAdmin($request);
+
         $data = Pembayaran::where('jenis', 'SPP')->get()
             ->groupBy('nis')
             ->map(function ($items) {
@@ -114,8 +138,10 @@ class RekapController extends Controller
         ]);
     }
 
-    public function buku()
+    public function buku(Request $request)
     {
+        $this->checkAdmin($request);
+
         $data = Pembayaran::where('jenis', 'Buku')->get()
             ->groupBy('nis')
             ->map(function ($items) {

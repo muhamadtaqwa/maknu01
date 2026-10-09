@@ -19,13 +19,8 @@ class DashboardController extends Controller
         $bulanIni = now()->month;
         $tahunIni = now()->year;
 
-        $pembayaran = Pembayaran::all();
-        $totalBelumBayar = $pembayaran->filter(
-            fn($p) => $p->status === 'menunggu' || $p->status === 'dicicil'
-        )->count();
-        $totalSudahBayar = $pembayaran->filter(
-            fn($p) => $p->status === 'lunas'
-        )->count();
+        $totalBelumBayar = Pembayaran::whereIn('status_verifikasi', ['menunggu', 'dicicil'])->count();
+        $totalSudahBayar = Pembayaran::where('status_verifikasi', 'lunas')->count();
 
         $aktivitas = $this->getAktivitas();
 
@@ -34,12 +29,15 @@ class DashboardController extends Controller
         $grafikPresensiSiswaUser = [];
 
         if (auth()->user()->role === 'siswa') {
-            $nis = auth()->user()->siswa->nis;
-            $presensiSiswa = PresensiSiswa::where('nis', $nis)
-                ->whereMonth('tanggal', $bulanIni)
-                ->whereYear('tanggal', $tahunIni)
-                ->pluck('tanggal')
-                ->toArray();
+            $siswa = auth()->user()->siswa;
+            if ($siswa) {
+                $nis = $siswa->nis;
+                $presensiSiswa = PresensiSiswa::where('nis', $nis)
+                    ->whereMonth('tanggal', $bulanIni)
+                    ->whereYear('tanggal', $tahunIni)
+                    ->pluck('tanggal')
+                    ->toArray();
+            }
 
             // Grafik presensi seluruh siswa
             $startOfWeek = now()->startOfWeek();
@@ -66,14 +64,16 @@ class DashboardController extends Controller
         }
 
         if (auth()->user()->role === 'guru') {
-            // Presensi bulanan untuk kalender
-            $presensiGuruBulanan = PresensiGuru::where('guru_id', auth()->user()->guru->id)
-                ->whereMonth('tanggal', $bulanIni)
-                ->whereYear('tanggal', $tahunIni)
-                ->whereNotNull('jam_masuk')
-                ->whereNotNull('jam_pulang')
-                ->pluck('tanggal')
-                ->toArray();
+            $guru = auth()->user()->guru;
+            if ($guru) {
+                // Presensi bulanan untuk kalender
+                $presensiGuruBulanan = PresensiGuru::where('guru_id', $guru->id)
+                    ->whereMonth('tanggal', $bulanIni)
+                    ->whereYear('tanggal', $tahunIni)
+                    ->whereNotNull('jam_masuk')
+                    ->pluck('tanggal')
+                    ->toArray();
+            }
         }
 
         $grafikPresensi = [];
@@ -120,7 +120,6 @@ class DashboardController extends Controller
                 $endOfWeek->format('Y-m-d'),
             ])
                 ->whereNotNull('jam_masuk')
-                ->whereNotNull('jam_pulang')
                 ->get();
 
             for ($i = 0; $i < 7; $i++) {

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Siswa;
 use App\Models\User;
+use App\Models\PresensiSiswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
@@ -12,6 +14,10 @@ class SiswaController extends Controller
 {
     public function index(Request $request)
     {
+        if ($request->user()->role !== 'admin') {
+            abort(403, 'Hanya admin yang memiliki akses.');
+        }
+
         $query = Siswa::with('user')->orderBy('nis');
 
         // Search
@@ -35,8 +41,12 @@ class SiswaController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->user()->role !== 'admin') {
+            abort(403, 'Hanya admin yang berhak menambah siswa.');
+        }
+
         $request->validate([
-            'nis' => 'required|unique:siswas,nis',
+            'nis' => 'required|unique:siswas,nis|unique:users,username',
             'jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'nik' => 'nullable',
             'nama_lengkap' => 'required',
@@ -63,46 +73,52 @@ class SiswaController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        $user = User::create([
-            'username' => $request->nis,
-            'password' => Hash::make($request->password),
-            'role' => 'siswa',
-        ]);
-        $user->assignRole('siswa');
+        DB::transaction(function () use ($request) {
+            $user = User::create([
+                'username' => $request->nis,
+                'password' => Hash::make($request->password),
+                'role' => 'siswa',
+            ]);
+            $user->assignRole('siswa');
 
-        Siswa::create([
-            'user_id' => $user->id,
-            'nis' => $request->nis,
-            'nik' => $request->nik,
-            'nama_lengkap' => $request->nama_lengkap,
-            'tempat_lahir' => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'alamat' => $request->alamat,
-            'desa' => $request->desa,
-            'kecamatan' => $request->kecamatan,
-            'kabupaten' => $request->kabupaten,
-            'provinsi' => $request->provinsi,
-            'program_studi' => $request->program_studi,
-            'kelas' => $request->kelas,
-            'angkatan' => $request->angkatan,
-            'tahun_masuk' => $request->tahun_masuk,
-            'nomor_hp' => $request->nomor_hp,
-            'status' => $request->status ?? 'aktif',
-            'nama_ayah' => $request->nama_ayah,
-            'nik_ayah' => $request->nik_ayah,
-            'pekerjaan_ayah' => $request->pekerjaan_ayah,
-            'nama_ibu' => $request->nama_ibu,
-            'nik_ibu' => $request->nik_ibu,
-            'pekerjaan_ibu' => $request->pekerjaan_ibu,
-            'no_hp_orang_tua' => $request->no_hp_orang_tua,
-        ]);
+            Siswa::create([
+                'user_id' => $user->id,
+                'nis' => $request->nis,
+                'nik' => $request->nik,
+                'nama_lengkap' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'alamat' => $request->alamat,
+                'desa' => $request->desa,
+                'kecamatan' => $request->kecamatan,
+                'kabupaten' => $request->kabupaten,
+                'provinsi' => $request->provinsi,
+                'program_studi' => $request->program_studi,
+                'kelas' => $request->kelas,
+                'angkatan' => $request->angkatan,
+                'tahun_masuk' => $request->tahun_masuk,
+                'nomor_hp' => $request->nomor_hp,
+                'status' => $request->status ?? 'aktif',
+                'nama_ayah' => $request->nama_ayah,
+                'nik_ayah' => $request->nik_ayah,
+                'pekerjaan_ayah' => $request->pekerjaan_ayah,
+                'nama_ibu' => $request->nama_ibu,
+                'nik_ibu' => $request->nik_ibu,
+                'pekerjaan_ibu' => $request->pekerjaan_ibu,
+                'no_hp_orang_tua' => $request->no_hp_orang_tua,
+            ]);
+        });
 
         return back()->with('success', 'Siswa berhasil ditambah.');
     }
 
     public function update(Request $request, $id)
     {
+        if ($request->user()->role !== 'admin') {
+            abort(403, 'Hanya admin yang berhak mengedit siswa.');
+        }
+
         $siswa = Siswa::findOrFail($id);
 
         $request->validate([
@@ -162,9 +178,17 @@ class SiswaController extends Controller
 
     public function destroy($id)
     {
-        $siswa = Siswa::findOrFail($id);
-        $siswa->user->delete();
-        $siswa->delete();
+        if (request()->user()->role !== 'admin') {
+            abort(403, 'Hanya admin yang berhak menghapus siswa.');
+        }
+
+        DB::transaction(function () use ($id) {
+            $siswa = Siswa::findOrFail($id);
+            PresensiSiswa::where('nis', $siswa->nis)->delete();
+            $siswa->user?->delete();
+            $siswa->delete();
+        });
+
         return back()->with('success', 'Siswa berhasil dihapus.');
     }
 }

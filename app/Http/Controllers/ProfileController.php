@@ -32,7 +32,7 @@ class ProfileController extends Controller
                 'password' => 'nullable|min:6',
             ]);
 
-            $user->guru->update($request->only([
+            $user->guru?->update($request->only([
                 'nama_lengkap',
                 'nik',
                 'tempat_lahir',
@@ -67,7 +67,7 @@ class ProfileController extends Controller
                 'password' => 'nullable|min:6',
             ]);
 
-            $user->siswa->update($request->only([
+            $user->siswa?->update($request->only([
                 'nama_lengkap',
                 'nik',
                 'tempat_lahir',
@@ -100,12 +100,16 @@ class ProfileController extends Controller
 
     public function gantiPassword(Request $request)
     {
+        if ($request->user()->role !== 'admin') {
+            abort(403, 'Hanya admin yang berhak mereset password pengguna.');
+        }
+
         $request->validate([
             'username' => 'required|exists:users,username',
             'password_baru' => 'required|min:6',
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        $user = User::where('username', $request->username)->firstOrFail();
         $user->update(['password' => Hash::make($request->password_baru)]);
 
         return back()->with('success', 'Password berhasil diubah.');

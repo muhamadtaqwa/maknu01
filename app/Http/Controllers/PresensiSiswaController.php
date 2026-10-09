@@ -140,8 +140,23 @@ class PresensiSiswaController extends Controller
 
     public function store(Request $request)
     {
+        $user = $request->user();
+
+        if ($user->role === 'siswa') {
+            $nis = $user->siswa?->nis;
+            if (!$nis) {
+                return back()->with('error', 'Data profil siswa tidak ditemukan.');
+            }
+        } elseif ($user->role === 'admin' || $user->role === 'guru') {
+            $request->validate([
+                'nis' => 'required|exists:siswas,nis',
+            ]);
+            $nis = $request->nis;
+        } else {
+            abort(403, 'Akses ditolak.');
+        }
+
         $request->validate([
-            'nis' => 'required|exists:siswas,nis',
             'jarak' => 'nullable|numeric',
         ]);
 
@@ -149,7 +164,7 @@ class PresensiSiswaController extends Controller
         $jam = now()->format('H:i:s');
         $status = $jam <= '07:00:00' ? 'tepat_waktu' : 'terlambat';
 
-        $sudah = PresensiSiswa::where('nis', $request->nis)
+        $sudah = PresensiSiswa::where('nis', $nis)
             ->whereDate('tanggal', $tanggal)
             ->exists();
 
@@ -158,7 +173,7 @@ class PresensiSiswaController extends Controller
         }
 
         PresensiSiswa::create([
-            'nis' => $request->nis,
+            'nis' => $nis,
             'tanggal' => $tanggal,
             'jam_masuk' => $jam,
             'status' => $status,
@@ -170,7 +185,13 @@ class PresensiSiswaController extends Controller
 
     public function destroy($id)
     {
+        $user = request()->user();
         $presensi = PresensiSiswa::findOrFail($id);
+
+        if ($user->role === 'siswa' && $presensi->nis !== $user->siswa?->nis) {
+            abort(403, 'Anda hanya dapat membatalkan presensi Anda sendiri.');
+        }
+
         $presensi->delete();
         return back()->with('success', 'Presensi dibatalkan.');
     }

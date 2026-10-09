@@ -2,9 +2,10 @@ import { useState } from "react";
 import { usePage, Link, router } from "@inertiajs/react";
 import AppLayout from "@/Layouts/AppLayout";
 
-export default function Santri() {
-    const { santris, filters } = usePage().props;
-    const [search, setSearch] = useState(filters.search || "");
+export default function Siswa() {
+    const { siswas, filters } = usePage().props;
+    const dataSiswa = siswas || { data: [] };
+    const [search, setSearch] = useState(filters?.search || "");
     const [selected, setSelected] = useState(null);
     const [detail, setDetail] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
@@ -13,7 +14,7 @@ export default function Santri() {
     const menu = [
         {
             label: "Siswa",
-            path: "/rekap/santri",
+            path: "/rekap/siswa",
             bg: "bg-[#009788]/10",
             text: "text-[#009788]",
         },
@@ -25,7 +26,7 @@ export default function Santri() {
         },
         {
             label: "Buku",
-            path: "/rekap/kitab",
+            path: "/rekap/buku",
             bg: "bg-orange-50",
             text: "text-orange-600",
         },
@@ -34,7 +35,7 @@ export default function Santri() {
     const handleSearch = (value) => {
         setSearch(value);
         router.get(
-            "/rekap/santri",
+            "/rekap/siswa",
             { search: value },
             { preserveState: true, replace: true },
         );
@@ -44,11 +45,11 @@ export default function Santri() {
         setShowPopup(true);
         setLoading(true);
         try {
-            const res = await fetch(`/api/rekap/santri/${nis}`, {
+            const res = await fetch(`/api/rekap/siswa/${nis}`, {
                 headers: { Accept: "application/json" },
             });
             const data = await res.json();
-            setSelected(data.santri);
+            setSelected(data.siswa);
             setDetail(data.rekap);
         } catch (err) {
             console.error(err);
@@ -89,12 +90,12 @@ export default function Santri() {
 
                 {/* 2 Kolom di desktop */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {santris.data.length === 0 && (
+                    {dataSiswa.data.length === 0 && (
                         <p className="text-center text-slate-400 py-10 md:col-span-2">
                             Tidak ada data
                         </p>
                     )}
-                    {santris.data.map((s) => (
+                    {dataSiswa.data.map((s) => (
                         <div
                             key={s.nis}
                             className="rounded-2xl p-4 flex items-center gap-3 bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all"
@@ -121,34 +122,34 @@ export default function Santri() {
                 </div>
 
                 {/* Pagination */}
-                {santris.last_page > 1 && (
+                {dataSiswa.last_page > 1 && (
                     <div className="flex items-center justify-between mt-4">
                         <button
                             onClick={() =>
                                 router.get(
-                                    santris.prev_page_url,
+                                    dataSiswa.prev_page_url,
                                     {},
                                     { preserveState: true },
                                 )
                             }
-                            disabled={!santris.prev_page_url}
+                            disabled={!dataSiswa.prev_page_url}
                             className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Prev
                         </button>
                         <span className="text-xs text-slate-400">
-                            Halaman {santris.current_page} dari{" "}
-                            {santris.last_page}
+                            Halaman {dataSiswa.current_page} dari{" "}
+                            {dataSiswa.last_page}
                         </span>
                         <button
                             onClick={() =>
                                 router.get(
-                                    santris.next_page_url,
+                                    dataSiswa.next_page_url,
                                     {},
                                     { preserveState: true },
                                 )
                             }
-                            disabled={!santris.next_page_url}
+                            disabled={!dataSiswa.next_page_url}
                             className="px-4 py-2 rounded-full text-xs font-semibold bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             Next
