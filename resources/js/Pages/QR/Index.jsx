@@ -421,9 +421,29 @@ export default function Index() {
                 ) : (
                     <>
                         <div className="rounded-[30px] border border-teal-100 bg-white p-6 shadow-2xl mb-4">
-                            <h3 className="font-semibold text-sm text-slate-700 mb-3">
-                                Status Hari Ini
-                            </h3>
+                            <div className="flex justify-between items-center mb-3">
+                                <h3 className="font-semibold text-sm text-slate-700">
+                                    Status Hari Ini
+                                </h3>
+                                <button
+                                    type="button"
+                                    onClick={() => ambilLokasi(true)}
+                                    disabled={loadingLokasi}
+                                    className={`text-[11px] font-semibold px-2.5 py-1 rounded-full transition disabled:opacity-50 ${
+                                        jarak !== null
+                                            ? "text-[#009788] hover:text-[#007a6e] border border-teal-200 bg-teal-50 hover:bg-teal-100"
+                                            : "text-white bg-gradient-to-r from-[#009788] to-[#00b5a5] shadow-sm hover:opacity-95"
+                                    }`}
+                                >
+                                    {loadingLokasi
+                                        ? jarak !== null
+                                            ? "Memperbarui..."
+                                            : "Mencari Lokasi..."
+                                        : jarak !== null
+                                          ? "Perbarui Lokasi"
+                                          : "Izinkan Lokasi"}
+                                </button>
+                            </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
                                     <span className="text-xs text-slate-500">
@@ -450,54 +470,29 @@ export default function Index() {
                                         </span>
                                     </div>
                                 )}
-                                {jarak !== null ? (
-                                    <div className="flex justify-between items-center py-1">
-                                        <span className="text-xs text-slate-500">
-                                            Jarak
-                                        </span>
-                                        <div className="flex items-center gap-2">
-                                            <span
-                                                className={`text-sm font-semibold ${
-                                                    jarak <= RADIUS_MAX
-                                                        ? "text-emerald-600"
-                                                        : "text-red-500"
-                                                }`}
-                                            >
-                                                {jarak.toFixed(0)} Meter
-                                                {jarak <= RADIUS_MAX
-                                                    ? " (Di Radius)"
-                                                    : " (Di Luar Radius)"}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                onClick={() => ambilLokasi(true)}
-                                                disabled={loadingLokasi}
-                                                className="text-[11px] text-[#009788] hover:text-[#007a6e] font-semibold border border-teal-200 bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-full transition disabled:opacity-50"
-                                            >
-                                                {loadingLokasi
-                                                    ? "Memperbarui..."
-                                                    : "Perbarui Lokasi"}
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-2xl text-left">
-                                        <p className="text-xs text-amber-800 font-medium mb-2">
-                                            {lokasiError ||
-                                                "Lokasi GPS belum terdeteksi."}
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xs text-slate-500">
+                                        Jarak
+                                    </span>
+                                    <span
+                                        className={`text-sm font-semibold ${
+                                            jarak !== null
+                                                ? jarak <= RADIUS_MAX
+                                                    ? "text-emerald-600"
+                                                    : "text-red-500"
+                                                : "text-slate-400"
+                                        }`}
+                                    >
+                                        {jarak !== null ? `${jarak.toFixed(0)} Meter` : "-"}
+                                    </span>
+                                </div>
+                                {lokasiError && (
+                                    <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-left">
+                                        <p className="text-xs text-amber-800 font-medium">
+                                            {lokasiError}
                                         </p>
-                                        <button
-                                            type="button"
-                                            onClick={() => ambilLokasi(true)}
-                                            disabled={loadingLokasi}
-                                            className="w-full bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2 px-4 rounded-xl text-xs font-semibold shadow hover:opacity-95 transition disabled:opacity-50 text-center"
-                                        >
-                                            {loadingLokasi
-                                                ? "Mencari Lokasi..."
-                                                : "Izinkan Lokasi"}
-                                        </button>
                                         {showPanduanIzin && (
-                                            <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                                            <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                                                 Jika izin sebelumnya terlanjur ditolak: klik ikon gembok/setelan di kiri atas dekat alamat web browser, pilih Izin, lalu aktifkan Lokasi.
                                             </p>
                                         )}
