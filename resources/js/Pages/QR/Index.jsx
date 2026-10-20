@@ -32,6 +32,8 @@ export default function Index() {
     const [activeTab, setActiveTab] = useState("guru");
     const [jarak, setJarak] = useState(null);
     const [lokasiError, setLokasiError] = useState("");
+    const [loadingLokasi, setLoadingLokasi] = useState(false);
+    const [showPanduanIzin, setShowPanduanIzin] = useState(false);
     const scannerRef = useRef(null);
     const qrRef = useRef(null);
 
@@ -49,25 +51,63 @@ export default function Index() {
         };
     }, []);
 
-    // Ambil lokasi user
-    useEffect(() => {
-        if (!isAdmin && "geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const jarakMeter = hitungJarak(
-                        pos.coords.latitude,
-                        pos.coords.longitude,
-                        SEKOLAH_LAT,
-                        SEKOLAH_LON,
+    const ambilLokasi = (showFeedback = false) => {
+        if (!("geolocation" in navigator)) {
+            setLokasiError("Browser tidak mendukung geolokasi GPS.");
+            return;
+        }
+
+        setLoadingLokasi(true);
+        setLokasiError("");
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const jarakMeter = hitungJarak(
+                    pos.coords.latitude,
+                    pos.coords.longitude,
+                    SEKOLAH_LAT,
+                    SEKOLAH_LON,
+                );
+                setJarak(jarakMeter);
+                setLokasiError("");
+                setLoadingLokasi(false);
+                setShowPanduanIzin(false);
+                if (showFeedback) {
+                    toast.success(
+                        `Lokasi berhasil didapatkan (${jarakMeter.toFixed(0)}m dari sekolah)`,
                     );
-                    setJarak(jarakMeter);
-                    setLokasiError("");
-                },
-                (err) => {
-                    setLokasiError("Lokasi tidak diizinkan. Aktifkan GPS.");
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 },
-            );
+                }
+            },
+            (err) => {
+                setLoadingLokasi(false);
+                if (err.code === 1) {
+                    setLokasiError(
+                        "Izin lokasi belum diberikan di browser. Silakan izinkan akses lokasi.",
+                    );
+                    setShowPanduanIzin(true);
+                } else if (err.code === 2) {
+                    setLokasiError(
+                        "Sinyal GPS tidak ditemukan. Pastikan GPS perangkat aktif.",
+                    );
+                } else if (err.code === 3) {
+                    setLokasiError(
+                        "Waktu pencarian lokasi habis. Silakan coba lagi.",
+                    );
+                } else {
+                    setLokasiError("Gagal mendapatkan lokasi GPS.");
+                }
+                if (showFeedback) {
+                    toast.error("Gagal mendapatkan lokasi. Periksa izin lokasi atau GPS.");
+                }
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+        );
+    };
+
+    // Ambil lokasi user saat halaman dibuka
+    useEffect(() => {
+        if (!isAdmin) {
+            ambilLokasi(false);
         }
     }, []);
 
@@ -126,7 +166,8 @@ export default function Index() {
 
         // Validasi radius
         if (jarak === null) {
-            toast.error("Lokasi belum didapatkan. Tunggu sebentar.");
+            toast.error("Lokasi belum didapatkan. Sedang meminta lokasi...");
+            ambilLokasi(true);
             return;
         }
 
@@ -409,20 +450,58 @@ export default function Index() {
                                         </span>
                                     </div>
                                 )}
-                                {jarak !== null && (
-                                    <div className="flex justify-between items-center">
+                                {jarak !== null ? (
+                                    <div className="flex justify-between items-center py-1">
                                         <span className="text-xs text-slate-500">
                                             Jarak
                                         </span>
-                                        <span className="text-sm font-medium text-slate-700">
-                                            {jarak.toFixed(0)} Meter
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span
+                                                className={`text-sm font-semibold ${
+                                                    jarak <= RADIUS_MAX
+                                                        ? "text-emerald-600"
+                                                        : "text-red-500"
+                                                }`}
+                                            >
+                                                {jarak.toFixed(0)} Meter
+                                                {jarak <= RADIUS_MAX
+                                                    ? " (Di Radius)"
+                                                    : " (Di Luar Radius)"}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => ambilLokasi(true)}
+                                                disabled={loadingLokasi}
+                                                className="text-[11px] text-[#009788] hover:text-[#007a6e] font-semibold border border-teal-200 bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-full transition disabled:opacity-50"
+                                            >
+                                                {loadingLokasi
+                                                    ? "Memperbarui..."
+                                                    : "Perbarui Lokasi"}
+                                            </button>
+                                        </div>
                                     </div>
-                                )}
-                                {lokasiError && (
-                                    <p className="text-xs text-red-500">
-                                        {lokasiError}
-                                    </p>
+                                ) : (
+                                    <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-2xl text-left">
+                                        <p className="text-xs text-amber-800 font-medium mb-2">
+                                            {lokasiError ||
+                                                "Lokasi GPS belum terdeteksi."}
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => ambilLokasi(true)}
+                                            disabled={loadingLokasi}
+                                            className="w-full bg-gradient-to-r from-[#009788] to-[#00b5a5] text-white py-2 px-4 rounded-xl text-xs font-semibold shadow hover:opacity-95 transition disabled:opacity-50 text-center"
+                                        >
+                                            {loadingLokasi
+                                                ? "Mencari Lokasi..."
+                                                : "Izinkan Lokasi"}
+                                        </button>
+                                        {showPanduanIzin && (
+                                            <p className="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                                                Jika izin sebelumnya terlanjur ditolak: klik ikon gembok/setelan di kiri atas dekat alamat web browser, pilih Izin, lalu aktifkan Lokasi.
+                                            </p>
+                                        )}
+                                    </div>
                                 )}
                                 {isGuru && presensiHariIni && (
                                     <>
