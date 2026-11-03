@@ -29,7 +29,7 @@ export default function Dashboard() {
     const [time, setTime] = useState(new Date());
     const [hijri, setHijri] = useState("");
     const dataDenganNol = [
-        { hari: "", hadir: 0, tidak: 0 },
+        { hari: "", hadir: 0 },
         ...grafikGuruAdmin,
     ];
 
@@ -237,24 +237,6 @@ export default function Dashboard() {
                                                     stopOpacity={0}
                                                 />
                                             </linearGradient>
-                                            <linearGradient
-                                                id="gradientTidak"
-                                                x1="0"
-                                                y1="0"
-                                                x2="0"
-                                                y2="1"
-                                            >
-                                                <stop
-                                                    offset="5%"
-                                                    stopColor="#f97316"
-                                                    stopOpacity={0.3}
-                                                />
-                                                <stop
-                                                    offset="95%"
-                                                    stopColor="#f97316"
-                                                    stopOpacity={0}
-                                                />
-                                            </linearGradient>
                                         </defs>
                                         <CartesianGrid
                                             strokeDasharray="3 3"
@@ -273,16 +255,10 @@ export default function Dashboard() {
                                         <Area
                                             type="monotone"
                                             dataKey="hadir"
+                                            name="Hadir"
                                             stroke="#009788"
                                             strokeWidth={2}
                                             fill="url(#gradientHadir)"
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="tidak"
-                                            stroke="#f97316"
-                                            strokeWidth={2}
-                                            fill="url(#gradientTidak)"
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>
