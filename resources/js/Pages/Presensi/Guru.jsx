@@ -148,10 +148,15 @@ export default function Guru() {
                                                     {p.nama}
                                                 </p>
                                             </div>
-                                            {p.status === "terlambat" && (
-                                                <span className="text-[10px] bg-red-50 text-red-500 px-2 py-0.5 rounded-full">
-                                                    Terlambat
-                                                </span>
+                                            {isAdmin && (
+                                                <button
+                                                    onClick={() =>
+                                                        handleBatalkan(p.id)
+                                                    }
+                                                    className="text-[11px] bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 px-3 py-1 rounded-full font-semibold transition-all"
+                                                >
+                                                    Batal
+                                                </button>
                                             )}
                                         </div>
 
@@ -184,19 +189,6 @@ export default function Guru() {
                                                 </span>
                                             </div>
                                         </div>
-
-                                        {isAdmin && (
-                                            <div className="mt-3 pt-3 border-t border-slate-100">
-                                                <button
-                                                    onClick={() =>
-                                                        handleBatalkan(p.id)
-                                                    }
-                                                    className="w-full bg-red-500 text-white px-3 py-2 rounded-full text-xs font-semibold hover:bg-red-600 transition-all"
-                                                >
-                                                    Batal
-                                                </button>
-                                            </div>
-                                        )}
                                     </div>
                                 ))}
                             </div>
