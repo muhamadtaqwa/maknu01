@@ -227,14 +227,14 @@ export default function Dashboard() {
                                                 y2="1"
                                             >
                                                 <stop
-                                                    offset="5%"
+                                                    offset="0%"
                                                     stopColor="#009788"
-                                                    stopOpacity={0.3}
+                                                    stopOpacity={0.35}
                                                 />
                                                 <stop
                                                     offset="95%"
                                                     stopColor="#009788"
-                                                    stopOpacity={0}
+                                                    stopOpacity={0.02}
                                                 />
                                             </linearGradient>
                                         </defs>
@@ -253,11 +253,23 @@ export default function Dashboard() {
                                         <Tooltip />
                                         <Legend />
                                         <Area
-                                            type="monotone"
+                                            type="natural"
                                             dataKey="hadir"
                                             name="Hadir"
                                             stroke="#009788"
-                                            strokeWidth={2}
+                                            strokeWidth={3}
+                                            dot={{
+                                                r: 3,
+                                                fill: "#009788",
+                                                stroke: "#ffffff",
+                                                strokeWidth: 2,
+                                            }}
+                                            activeDot={{
+                                                r: 5,
+                                                fill: "#009788",
+                                                stroke: "#ffffff",
+                                                strokeWidth: 2,
+                                            }}
                                             fill="url(#gradientHadir)"
                                         />
                                     </AreaChart>
