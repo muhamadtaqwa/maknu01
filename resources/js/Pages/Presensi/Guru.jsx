@@ -137,14 +137,14 @@ export default function Guru() {
                                 {hadir.map((p) => (
                                     <div
                                         key={p.id}
-                                        className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"
+                                        className="rounded-2xl border border-teal-100 bg-white px-4 py-2.5 shadow-sm"
                                     >
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                        <div className="flex items-center justify-between mb-2 gap-2">
+                                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0">
                                                     {p.nama?.charAt(0)}
                                                 </div>
-                                                <p className="font-semibold text-sm">
+                                                <p className="font-semibold text-sm text-slate-800 truncate" title={p.nama}>
                                                     {p.nama}
                                                 </p>
                                             </div>
@@ -153,14 +153,14 @@ export default function Guru() {
                                                     onClick={() =>
                                                         handleBatalkan(p.id)
                                                     }
-                                                    className="text-[11px] bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 px-3 py-1 rounded-full font-semibold transition-all"
+                                                    className="text-[11px] bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 px-3 py-1 rounded-full font-semibold transition-all shrink-0"
                                                 >
                                                     Batal
                                                 </button>
                                             )}
                                         </div>
 
-                                        <div className="space-y-1.5">
+                                        <div className="space-y-1">
                                             <div className="flex justify-between items-center">
                                                 <span className="text-xs text-slate-500">
                                                     Jam Masuk
@@ -176,16 +176,6 @@ export default function Guru() {
                                                 <span className="text-sm font-medium text-slate-700">
                                                     {formatJam(p.jam_pulang) ||
                                                         "-"}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-xs text-slate-500">
-                                                    Jarak
-                                                </span>
-                                                <span className="text-sm font-medium text-slate-700">
-                                                    {p.jarak
-                                                        ? `${p.jarak} meter`
-                                                        : "-"}
                                                 </span>
                                             </div>
                                         </div>
@@ -204,13 +194,13 @@ export default function Guru() {
                                 {belumHadir.map((p) => (
                                     <div
                                         key={p.guru_id}
-                                        className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"
+                                        className="rounded-2xl border border-teal-100 bg-white px-4 py-2.5 shadow-sm"
                                     >
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0">
                                                 {p.nama?.charAt(0)}
                                             </div>
-                                            <p className="font-semibold text-sm">
+                                            <p className="font-semibold text-sm text-slate-800 truncate" title={p.nama}>
                                                 {p.nama}
                                             </p>
                                         </div>
@@ -277,18 +267,18 @@ export default function Guru() {
                             {rekap.map((r) => (
                                 <div
                                     key={r.guru_id}
-                                    className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"
+                                    className="rounded-2xl border border-teal-100 bg-white px-4 py-2.5 shadow-sm"
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-8 h-8 bg-[#009788] rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                                            <div className="w-8 h-8 bg-[#009788] rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0">
                                                 {r.nama?.charAt(0)}
                                             </div>
-                                            <p className="font-semibold text-sm">
+                                            <p className="font-semibold text-sm text-slate-800 truncate" title={r.nama}>
                                                 {r.nama}
                                             </p>
                                         </div>
-                                        <div className="flex gap-4 text-center">
+                                        <div className="flex gap-4 text-center shrink-0">
                                             <div>
                                                 <p className="text-sm font-bold text-emerald-600">
                                                     {r.total_hadir}
