@@ -168,7 +168,7 @@ class PresensiGuruController extends Controller
 
         $tanggal = now()->format('Y-m-d');
         $jam = now()->format('H:i:s');
-        $status = $jam <= '07:00:00' ? 'tepat_waktu' : 'terlambat';
+        $status = 'tepat_waktu'; // Guru tidak ada status terlambat
 
         $presensi = PresensiGuru::where('guru_id', $guruId)
             ->whereDate('tanggal', $tanggal)

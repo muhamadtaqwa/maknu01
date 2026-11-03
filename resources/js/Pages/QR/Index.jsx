@@ -51,6 +51,24 @@ export default function Index() {
         };
     }, []);
 
+    const prosesPosisi = (pos, showFeedback) => {
+        const jarakMeter = hitungJarak(
+            pos.coords.latitude,
+            pos.coords.longitude,
+            SEKOLAH_LAT,
+            SEKOLAH_LON,
+        );
+        setJarak(jarakMeter);
+        setLokasiError("");
+        setLoadingLokasi(false);
+        setShowPanduanIzin(false);
+        if (showFeedback) {
+            toast.success(
+                `Lokasi berhasil didapatkan (${jarakMeter.toFixed(0)}m dari sekolah)`,
+            );
+        }
+    };
+
     const ambilLokasi = (showFeedback = false) => {
         if (!("geolocation" in navigator)) {
             setLokasiError("Browser tidak mendukung geolokasi GPS.");
@@ -60,39 +78,43 @@ export default function Index() {
         setLoadingLokasi(true);
         setLokasiError("");
 
+        // Coba GPS akurasi tinggi terlebih dahulu
         navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const jarakMeter = hitungJarak(
-                    pos.coords.latitude,
-                    pos.coords.longitude,
-                    SEKOLAH_LAT,
-                    SEKOLAH_LON,
-                );
-                setJarak(jarakMeter);
-                setLokasiError("");
-                setLoadingLokasi(false);
-                setShowPanduanIzin(false);
-                if (showFeedback) {
-                    toast.success(
-                        `Lokasi berhasil didapatkan (${jarakMeter.toFixed(0)}m dari sekolah)`,
-                    );
-                }
-            },
+            (pos) => prosesPosisi(pos, showFeedback),
             (err) => {
+                // Jika timeout atau GPS satelit tidak tembus ruangan, coba fallback jaringan (WiFi/BTS)
+                if (err.code === 2 || err.code === 3) {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => prosesPosisi(pos, showFeedback),
+                        (errFallback) => {
+                            setLoadingLokasi(false);
+                            if (errFallback.code === 1) {
+                                setLokasiError(
+                                    "Izin lokasi belum diberikan di browser. Silakan izinkan akses lokasi.",
+                                );
+                                setShowPanduanIzin(true);
+                            } else {
+                                setLokasiError(
+                                    "Sinyal lokasi tidak ditemukan. Pastikan GPS HP aktif.",
+                                );
+                            }
+                            if (showFeedback) {
+                                toast.error(
+                                    "Gagal mendapatkan lokasi. Periksa izin lokasi atau GPS.",
+                                );
+                            }
+                        },
+                        { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 },
+                    );
+                    return;
+                }
+
                 setLoadingLokasi(false);
                 if (err.code === 1) {
                     setLokasiError(
                         "Izin lokasi belum diberikan di browser. Silakan izinkan akses lokasi.",
                     );
                     setShowPanduanIzin(true);
-                } else if (err.code === 2) {
-                    setLokasiError(
-                        "Sinyal GPS tidak ditemukan. Pastikan GPS perangkat aktif.",
-                    );
-                } else if (err.code === 3) {
-                    setLokasiError(
-                        "Waktu pencarian lokasi habis. Silakan coba lagi.",
-                    );
                 } else {
                     setLokasiError("Gagal mendapatkan lokasi GPS.");
                 }
@@ -100,13 +122,13 @@ export default function Index() {
                     toast.error("Gagal mendapatkan lokasi. Periksa izin lokasi atau GPS.");
                 }
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 },
         );
     };
 
-    // Ambil lokasi user saat halaman dibuka
+    // Ambil lokasi user saat halaman dibuka (hanya siswa yang wajib GPS)
     useEffect(() => {
-        if (!isAdmin) {
+        if (isSiswa) {
             ambilLokasi(false);
         }
     }, []);
@@ -164,16 +186,18 @@ export default function Index() {
             return;
         }
 
-        // Validasi radius
-        if (jarak === null) {
-            toast.error("Lokasi belum didapatkan. Sedang meminta lokasi...");
-            ambilLokasi(true);
-            return;
-        }
+        // Validasi radius (khusus siswa)
+        if (isSiswa) {
+            if (jarak === null) {
+                toast.error("Lokasi belum didapatkan. Sedang meminta lokasi...");
+                ambilLokasi(true);
+                return;
+            }
 
-        if (jarak > RADIUS_MAX) {
-            toast.error(`Anda di luar radius ${RADIUS_MAX}m dari sekolah.`);
-            return;
+            if (jarak > RADIUS_MAX) {
+                toast.error(`Anda di luar radius ${RADIUS_MAX}m dari sekolah.`);
+                return;
+            }
         }
 
         setSending(true);
@@ -181,7 +205,7 @@ export default function Index() {
         if (isGuru) {
             router.post(
                 "/presensi-guru",
-                { guru_id: guruId, jarak: jarak.toFixed(2) },
+                { guru_id: guruId, jarak: null },
                 {
                     onSuccess: () => {
                         playBeep();
@@ -425,24 +449,26 @@ export default function Index() {
                                 <h3 className="font-semibold text-sm text-slate-700">
                                     Status Hari Ini
                                 </h3>
-                                <button
-                                    type="button"
-                                    onClick={() => ambilLokasi(true)}
-                                    disabled={loadingLokasi}
-                                    className={`text-[11px] font-semibold px-2.5 py-1 rounded-full transition disabled:opacity-50 ${
-                                        jarak !== null
-                                            ? "text-[#009788] hover:text-[#007a6e] border border-teal-200 bg-teal-50 hover:bg-teal-100"
-                                            : "text-white bg-gradient-to-r from-[#009788] to-[#00b5a5] shadow-sm hover:opacity-95"
-                                    }`}
-                                >
-                                    {loadingLokasi
-                                        ? jarak !== null
-                                            ? "Memperbarui..."
-                                            : "Mencari Lokasi..."
-                                        : jarak !== null
-                                          ? "Perbarui Lokasi"
-                                          : "Izinkan Lokasi"}
-                                </button>
+                                {isSiswa && (
+                                    <button
+                                        type="button"
+                                        onClick={() => ambilLokasi(true)}
+                                        disabled={loadingLokasi}
+                                        className={`text-[11px] font-semibold px-2.5 py-1 rounded-full transition disabled:opacity-50 ${
+                                            jarak !== null
+                                                ? "text-[#009788] hover:text-[#007a6e] border border-teal-200 bg-teal-50 hover:bg-teal-100"
+                                                : "text-white bg-gradient-to-r from-[#009788] to-[#00b5a5] shadow-sm hover:opacity-95"
+                                        }`}
+                                    >
+                                        {loadingLokasi
+                                            ? jarak !== null
+                                                ? "Memperbarui..."
+                                                : "Mencari Lokasi..."
+                                            : jarak !== null
+                                              ? "Perbarui Lokasi"
+                                              : "Izinkan Lokasi"}
+                                    </button>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
@@ -455,7 +481,7 @@ export default function Index() {
                                         {getStatusText()}
                                     </span>
                                 </div>
-                                {presensiHariIni && (
+                                {isSiswa && presensiHariIni && (
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs text-slate-500">
                                             Keterangan
@@ -470,23 +496,25 @@ export default function Index() {
                                         </span>
                                     </div>
                                 )}
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xs text-slate-500">
-                                        Jarak
-                                    </span>
-                                    <span
-                                        className={`text-sm font-semibold ${
-                                            jarak !== null
-                                                ? jarak <= RADIUS_MAX
-                                                    ? "text-emerald-600"
-                                                    : "text-red-500"
-                                                : "text-slate-400"
-                                        }`}
-                                    >
-                                        {jarak !== null ? `${jarak.toFixed(0)} Meter` : "-"}
-                                    </span>
-                                </div>
-                                {lokasiError && (
+                                {isSiswa && (
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs text-slate-500">
+                                            Jarak
+                                        </span>
+                                        <span
+                                            className={`text-sm font-semibold ${
+                                                jarak !== null
+                                                    ? jarak <= RADIUS_MAX
+                                                        ? "text-emerald-600"
+                                                        : "text-red-500"
+                                                    : "text-slate-400"
+                                            }`}
+                                        >
+                                            {jarak !== null ? `${jarak.toFixed(0)} Meter` : "-"}
+                                        </span>
+                                    </div>
+                                )}
+                                {isSiswa && lokasiError && (
                                     <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-left">
                                         <p className="text-xs text-amber-800 font-medium">
                                             {lokasiError}

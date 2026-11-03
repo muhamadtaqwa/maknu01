@@ -296,7 +296,7 @@ export default function Guru() {
                                                 {r.nama}
                                             </p>
                                         </div>
-                                        <div className="flex gap-3 text-center">
+                                        <div className="flex gap-4 text-center">
                                             <div>
                                                 <p className="text-sm font-bold text-emerald-600">
                                                     {r.total_hadir}
@@ -311,14 +311,6 @@ export default function Guru() {
                                                 </p>
                                                 <p className="text-[10px] text-slate-400">
                                                     Tidak
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-amber-500">
-                                                    {r.total_terlambat || 0}
-                                                </p>
-                                                <p className="text-[10px] text-slate-400">
-                                                    Terlambat
                                                 </p>
                                             </div>
                                         </div>
