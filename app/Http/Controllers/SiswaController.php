@@ -185,6 +185,11 @@ class SiswaController extends Controller
         DB::transaction(function () use ($id) {
             $siswa = Siswa::findOrFail($id);
             PresensiSiswa::where('nis', $siswa->nis)->delete();
+            $pembayarans = \App\Models\Pembayaran::where('nis', $siswa->nis)->get();
+            foreach ($pembayarans as $p) {
+                $p->details()->delete();
+                $p->delete();
+            }
             $siswa->user?->delete();
             $siswa->delete();
         });

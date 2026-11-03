@@ -42,8 +42,13 @@ class PembayaranController extends Controller
                 $query->where('status_verifikasi', 'menunggu')
                     ->whereDoesntHave('details');
             } elseif ($request->status === 'dicicil') {
-                $query->where('status_verifikasi', 'menunggu')
-                    ->whereHas('details');
+                $query->where(function ($q) {
+                    $q->where('status_verifikasi', 'dicicil')
+                        ->orWhere(function ($sq) {
+                            $sq->where('status_verifikasi', '!=', 'lunas')
+                                ->whereHas('details');
+                        });
+                });
             } else {
                 $query->where('status_verifikasi', $request->status);
             }
@@ -145,7 +150,7 @@ class PembayaranController extends Controller
             $p->refresh();
 
             if ($p->sisa <= 0) {
-                $p->update(['status_verifikasi' => 'lunas', 'tgl_bayar' => now()]);
+                $p->update(['status_verifikasi' => 'lunas']);
             } else {
                 $p->update(['status_verifikasi' => 'dicicil']);
             }

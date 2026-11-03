@@ -30,9 +30,20 @@ class RppController extends Controller
 
     public function store(Request $request)
     {
+        $user = auth()->user();
+
+        if ($user->role !== 'admin' && $user->role !== 'guru') {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunggah RPP.');
+        }
+
+        $guruId = $user->role === 'admin' ? $request->guru_id : $user->guru?->id;
+        if (!$guruId) {
+            return back()->with('error', 'Data profil guru tidak ditemukan.');
+        }
+
         $request->validate([
             'mata_pelajaran' => 'required|string',
-            'guru_id' => 'required|exists:gurus,id',
+            'guru_id' => $user->role === 'admin' ? 'required|exists:gurus,id' : 'nullable',
             'file' => 'required|mimes:pdf|max:10240',
         ]);
 
@@ -40,7 +51,7 @@ class RppController extends Controller
 
         Rpp::create([
             'mata_pelajaran' => $request->mata_pelajaran,
-            'guru_id' => $request->guru_id,
+            'guru_id' => $guruId,
             'file' => $path,
         ]);
 
@@ -59,13 +70,13 @@ class RppController extends Controller
 
         $request->validate([
             'mata_pelajaran' => 'required|string',
-            'guru_id' => 'required|exists:gurus,id',
+            'guru_id' => $user->role === 'admin' ? 'required|exists:gurus,id' : 'nullable',
             'file' => 'nullable|mimes:pdf|max:10240',
         ]);
 
         $data = [
             'mata_pelajaran' => $request->mata_pelajaran,
-            'guru_id' => $request->guru_id,
+            'guru_id' => $user->role === 'admin' ? $request->guru_id : $rpp->guru_id,
         ];
 
         if ($request->hasFile('file')) {

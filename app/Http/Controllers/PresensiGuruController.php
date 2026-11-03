@@ -34,12 +34,13 @@ class PresensiGuruController extends Controller
                 ->get();
         } else {
             // Guru hanya lihat dirinya sendiri
-            $semuaGuru = Guru::where('id', $user->guru->id)->get();
-            $presensi = PresensiGuru::with('guru')
-                ->where('guru_id', $user->guru->id)
+            $guruId = $user->guru?->id;
+            $semuaGuru = $guruId ? Guru::where('id', $guruId)->get() : collect();
+            $presensi = $guruId ? PresensiGuru::with('guru')
+                ->where('guru_id', $guruId)
                 ->whereDate('tanggal', $tanggal)
                 ->orderBy('jam_masuk', 'asc')
-                ->get();
+                ->get() : collect();
         }
 
         $hadir = [];
@@ -81,7 +82,7 @@ class PresensiGuruController extends Controller
                 ->whereNotNull('jam_masuk');
 
             if (!$isAdmin) {
-                $query->where('guru_id', $user->guru->id);
+                $query->where('guru_id', $user->guru?->id);
             }
 
             $presensiMingguan = $query->get()->groupBy('guru_id');
@@ -112,7 +113,7 @@ class PresensiGuruController extends Controller
                 ->whereNotNull('jam_masuk');
 
             if (!$isAdmin) {
-                $query->where('guru_id', $user->guru->id);
+                $query->where('guru_id', $user->guru?->id);
             }
 
             $presensiBulanan = $query->get()->groupBy('guru_id');
@@ -195,7 +196,12 @@ class PresensiGuruController extends Controller
 
     public function batalkanMasuk($id)
     {
+        $user = request()->user();
         $presensi = PresensiGuru::findOrFail($id);
+
+        if ($user->role !== 'admin' && $user->guru?->id !== $presensi->guru_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk membatalkan jam masuk ini.');
+        }
 
         if ($presensi->jam_pulang) {
             return back()->with('error', 'Tidak bisa membatalkan jam masuk karena jam pulang sudah tercatat.');
@@ -207,7 +213,12 @@ class PresensiGuruController extends Controller
 
     public function batalkanPulang($id)
     {
+        $user = request()->user();
         $presensi = PresensiGuru::findOrFail($id);
+
+        if ($user->role !== 'admin' && $user->guru?->id !== $presensi->guru_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk membatalkan jam pulang ini.');
+        }
 
         if (!$presensi->jam_pulang) {
             return back()->with('error', 'Jam pulang belum tercatat.');
@@ -219,7 +230,13 @@ class PresensiGuruController extends Controller
 
     public function destroy($id)
     {
+        $user = request()->user();
         $presensi = PresensiGuru::findOrFail($id);
+
+        if ($user->role !== 'admin' && $user->guru?->id !== $presensi->guru_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk membatalkan presensi ini.');
+        }
+
         $presensi->delete();
         return back()->with('success', 'Presensi dibatalkan.');
     }

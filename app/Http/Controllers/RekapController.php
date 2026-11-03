@@ -20,7 +20,7 @@ class RekapController extends Controller
     {
         $this->checkAdmin($request);
 
-        $rekap = Pembayaran::all()->groupBy('jenis')->map(function ($items) {
+        $rekap = Pembayaran::with('details')->get()->groupBy('jenis')->map(function ($items) {
             $total = $items->sum('nominal');
             $dibayar = $items->sum('total_dibayar');
             $lunas = $items->filter(fn($i) => $i->status === 'lunas');
@@ -80,7 +80,7 @@ class RekapController extends Controller
         }
 
         $siswa = Siswa::where('nis', $nis)->firstOrFail();
-        $rekap = Pembayaran::where('nis', $nis)->get()->groupBy('jenis')->map(function ($items) {
+        $rekap = Pembayaran::with('details')->where('nis', $nis)->get()->groupBy('jenis')->map(function ($items) {
             $total = $items->sum('nominal');
             $dibayar = $items->sum('total_dibayar');
             $lunas = $items->filter(fn($i) => $i->status === 'lunas');
@@ -100,10 +100,10 @@ class RekapController extends Controller
     {
         $this->checkAdmin($request);
 
-        $data = Pembayaran::where('jenis', 'SPP')->get()
+        $data = Pembayaran::with(['siswa', 'details'])->where('jenis', 'SPP')->get()
             ->groupBy('nis')
             ->map(function ($items) {
-                $siswa = Siswa::where('nis', $items->first()->nis)->first();
+                $siswa = $items->first()->siswa;
                 $total = $items->sum('nominal');
                 $dibayar = $items->sum('total_dibayar');
                 $lunas = $items->filter(fn($i) => $i->status === 'lunas');
@@ -142,10 +142,10 @@ class RekapController extends Controller
     {
         $this->checkAdmin($request);
 
-        $data = Pembayaran::where('jenis', 'Buku')->get()
+        $data = Pembayaran::with(['siswa', 'details'])->where('jenis', 'Buku')->get()
             ->groupBy('nis')
             ->map(function ($items) {
-                $siswa = Siswa::where('nis', $items->first()->nis)->first();
+                $siswa = $items->first()->siswa;
                 $total = $items->sum('nominal');
                 $dibayar = $items->sum('total_dibayar');
                 $lunas = $items->filter(fn($i) => $i->status === 'lunas');

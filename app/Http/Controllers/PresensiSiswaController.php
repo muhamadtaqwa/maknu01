@@ -30,12 +30,13 @@ class PresensiSiswaController extends Controller
                 ->get();
         } else {
             // Siswa hanya lihat dirinya sendiri
-            $semuaSiswa = Siswa::where('nis', $user->siswa->nis)->get();
-            $presensi = PresensiSiswa::with('siswa')
-                ->where('nis', $user->siswa->nis)
+            $nis = $user->siswa?->nis;
+            $semuaSiswa = $nis ? Siswa::where('nis', $nis)->get() : collect();
+            $presensi = $nis ? PresensiSiswa::with('siswa')
+                ->where('nis', $nis)
                 ->whereDate('tanggal', $tanggal)
                 ->orderBy('jam_masuk', 'asc')
-                ->get();
+                ->get() : collect();
         }
 
         $hadir = [];
@@ -75,7 +76,7 @@ class PresensiSiswaController extends Controller
                 ->whereBetween('tanggal', [$startOfWeek, $endOfWeek]);
 
             if ($isSiswa) {
-                $query->where('nis', $user->siswa->nis);
+                $query->where('nis', $user->siswa?->nis);
             }
 
             $presensiMingguan = $query->get()->groupBy('nis');
@@ -105,7 +106,7 @@ class PresensiSiswaController extends Controller
                 ->whereYear('tanggal', $tahun);
 
             if ($isSiswa) {
-                $query->where('nis', $user->siswa->nis);
+                $query->where('nis', $user->siswa?->nis);
             }
 
             $presensiBulanan = $query->get()->groupBy('nis');
