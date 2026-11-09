@@ -7,7 +7,7 @@ import AppLayout from "@/Layouts/AppLayout";
 
 const SEKOLAH_LAT = -7.011283;
 const SEKOLAH_LON = 110.295949;
-const RADIUS_MAX = 40; // meter
+const RADIUS_MAX = 50; // meter
 const NIS_BEBAS_LOKASI = ["0099612948"]; // Siswa yang dikecualikan dari validasi GPS/jarak
 
 function hitungJarak(lat1, lon1, lat2, lon2) {
