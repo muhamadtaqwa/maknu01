@@ -8,6 +8,7 @@ import AppLayout from "@/Layouts/AppLayout";
 const SEKOLAH_LAT = -7.011283;
 const SEKOLAH_LON = 110.295949;
 const RADIUS_MAX = 40; // meter
+const NIS_BEBAS_LOKASI = ["0099612948"]; // Siswa yang dikecualikan dari validasi GPS/jarak
 
 function hitungJarak(lat1, lon1, lat2, lon2) {
     const R = 6371000;
@@ -42,6 +43,7 @@ export default function Index() {
     const isSiswa = user.role === "siswa";
     const guruId = user.guru?.id;
     const nisSiswa = user.siswa?.nis;
+    const wajibLokasi = isSiswa && !NIS_BEBAS_LOKASI.includes(String(nisSiswa));
 
     useEffect(() => {
         return () => {
@@ -128,10 +130,10 @@ export default function Index() {
 
     // Ambil lokasi user saat halaman dibuka (hanya siswa yang wajib GPS)
     useEffect(() => {
-        if (isSiswa) {
+        if (wajibLokasi) {
             ambilLokasi(false);
         }
-    }, []);
+    }, [wajibLokasi]);
 
     // Auto start kamera saat halaman dibuka
     useEffect(() => {
@@ -186,8 +188,8 @@ export default function Index() {
             return;
         }
 
-        // Validasi radius (khusus siswa)
-        if (isSiswa) {
+        // Validasi radius (khusus siswa yang wajib lokasi)
+        if (wajibLokasi) {
             if (jarak === null) {
                 toast.error("Lokasi belum didapatkan. Sedang meminta lokasi...");
                 ambilLokasi(true);
@@ -221,7 +223,10 @@ export default function Index() {
         } else if (isSiswa) {
             router.post(
                 "/presensi-siswa",
-                { nis: nisSiswa, jarak: jarak.toFixed(2) },
+                {
+                    nis: nisSiswa,
+                    jarak: jarak !== null ? Number(jarak.toFixed(2)) : null,
+                },
                 {
                     onSuccess: () => {
                         playBeep();
@@ -449,7 +454,7 @@ export default function Index() {
                                 <h3 className="font-semibold text-sm text-slate-700">
                                     Status Hari Ini
                                 </h3>
-                                {isSiswa && (
+                                {wajibLokasi && (
                                     <button
                                         type="button"
                                         onClick={() => ambilLokasi(true)}
@@ -503,18 +508,24 @@ export default function Index() {
                                         </span>
                                         <span
                                             className={`text-sm font-semibold ${
-                                                jarak !== null
-                                                    ? jarak <= RADIUS_MAX
-                                                        ? "text-emerald-600"
-                                                        : "text-red-500"
-                                                    : "text-slate-400"
+                                                !wajibLokasi
+                                                    ? "text-emerald-600"
+                                                    : jarak !== null
+                                                      ? jarak <= RADIUS_MAX
+                                                          ? "text-emerald-600"
+                                                          : "text-red-500"
+                                                      : "text-slate-400"
                                             }`}
                                         >
-                                            {jarak !== null ? `${jarak.toFixed(0)} Meter` : "-"}
+                                            {!wajibLokasi
+                                                ? "Bebas Lokasi"
+                                                : jarak !== null
+                                                  ? `${jarak.toFixed(0)} Meter`
+                                                  : "-"}
                                         </span>
                                     </div>
                                 )}
-                                {isSiswa && lokasiError && (
+                                {wajibLokasi && lokasiError && (
                                     <div className="mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-left">
                                         <p className="text-xs text-amber-800 font-medium">
                                             {lokasiError}
