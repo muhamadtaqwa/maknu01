@@ -20,11 +20,10 @@ class PresensiGuruController extends Controller
             abort(403);
         }
 
-        $now = now()->subHours(7);
         $mode = $request->mode ?? 'harian';
-        $tanggal = $request->tanggal ?? $now->format('Y-m-d');
-        $bulan = $request->bulan ?? $now->month;
-        $tahun = $request->tahun ?? $now->year;
+        $tanggal = $request->tanggal ?? now()->format('Y-m-d');
+        $bulan = $request->bulan ?? now()->month;
+        $tahun = $request->tahun ?? now()->year;
 
         // Filter guru
         if ($isAdmin) {
@@ -75,9 +74,8 @@ class PresensiGuruController extends Controller
         }
 
         if ($mode === 'mingguan') {
-            $nowMingguan = now()->subHours(7);
-            $startOfWeek = $nowMingguan->copy()->startOfWeek()->format('Y-m-d');
-            $endOfWeek = $nowMingguan->copy()->endOfWeek()->format('Y-m-d');
+            $startOfWeek = now()->startOfWeek()->format('Y-m-d');
+            $endOfWeek = now()->endOfWeek()->format('Y-m-d');
 
             $query = PresensiGuru::with('guru')
                 ->whereBetween('tanggal', [$startOfWeek, $endOfWeek])
@@ -169,9 +167,8 @@ class PresensiGuruController extends Controller
             'jarak' => 'nullable|numeric',
         ]);
 
-        $now = now()->subHours(7);
-        $tanggal = $now->format('Y-m-d');
-        $jam = $now->format('H:i:s');
+        $tanggal = now()->format('Y-m-d');
+        $jam = now()->format('H:i:s');
         $status = 'tepat_waktu'; // Guru tidak ada status terlambat
 
         $presensi = PresensiGuru::where('guru_id', $guruId)

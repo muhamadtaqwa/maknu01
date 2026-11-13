@@ -16,7 +16,7 @@ class QRController extends Controller
 
         if ($user->role === 'guru' && $user->guru) {
             $presensiHariIni = PresensiGuru::where('guru_id', $user->guru->id)
-                ->whereDate('tanggal', now()->subHours(7)->format('Y-m-d'))
+                ->whereDate('tanggal', now()->format('Y-m-d'))
                 ->first();
         }
 
