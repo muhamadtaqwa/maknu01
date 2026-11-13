@@ -10,7 +10,8 @@ class TimelineController extends Controller
 {
     public function index()
     {
-        $data = Timeline::orderByRaw("CASE WHEN tanggal >= CURDATE() THEN 0 ELSE 1 END")
+        $today = now()->toDateString();
+        $data = Timeline::orderByRaw("CASE WHEN tanggal >= ? THEN 0 ELSE 1 END", [$today])
             ->orderBy('tanggal', 'asc')
             ->orderBy('waktu', 'asc')
             ->get();
